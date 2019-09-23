@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	"github.com/cosmos/cosmos-sdk/client/keys"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/gorilla/mux"
 	"github.com/sentinel-official/hub/app"
 	tm "github.com/tendermint/tendermint/types"
@@ -38,11 +37,6 @@ func main() {
 	if err := cfg.Validate(); err != nil {
 		panic(err)
 	}
-
-	sdkCfg := sdk.GetConfig()
-	sdkCfg.SetBech32PrefixForAccount(cfg.Bech32PrefixAccAddr, cfg.Bech32PrefixAccPub)
-	sdkCfg.SetBech32PrefixForValidator(cfg.Bech32PrefixValAddr, cfg.Bech32PrefixValPub)
-	sdkCfg.SetBech32PrefixForConsensusNode(cfg.Bech32PrefixConsAddr, cfg.Bech32PrefixConsPub)
 
 	cdc := app.MakeCodec()
 	tm.RegisterEventDatas(cdc)
