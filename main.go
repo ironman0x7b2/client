@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"log"
 	"net/http"
 
 	"github.com/cosmos/cosmos-sdk/client/keys"
@@ -30,6 +31,8 @@ func init() {
 }
 
 func main() {
+	log.SetFlags(log.LstdFlags | log.Lmicroseconds)
+
 	cfg := types.NewDefaultConfig()
 	if err := cfg.LoadFromPath(""); err != nil {
 		panic(err)
