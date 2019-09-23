@@ -6,13 +6,6 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-
-	"github.com/ironman0x7b2/client/types"
-)
-
-var (
-	_ types.Request = (*addKey)(nil)
-	_ types.Request = (*deleteKey)(nil)
 )
 
 type addKey struct {

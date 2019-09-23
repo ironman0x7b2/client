@@ -3,12 +3,6 @@ package config
 import (
 	"encoding/json"
 	"net/http"
-
-	"github.com/ironman0x7b2/client/types"
-)
-
-var (
-	_ types.Request = (*updateConfig)(nil)
 )
 
 type updateConfig struct {
