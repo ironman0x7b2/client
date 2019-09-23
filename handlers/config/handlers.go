@@ -32,20 +32,28 @@ func updateConfigHandler(config *types.Config) http.HandlerFunc {
 			return
 		}
 
-		_config := config.Copy()
+		updates := &types.Config{
+			ChainID:         body.ChainID,
+			RPCAddress:      body.RPCAddress,
+			VerifierDir:     body.VerifierDir,
+			TrustNode:       body.TrustNode,
+			KeysDir:         body.KeysDir,
+			ResolverAddress: body.ResolverAddress,
+			KillSwitch:      body.KillSwitch,
+		}
 
-		config.Update(
-			&types.Config{
-				ChainID:    body.ChainID,
-				RPCAddress: body.RPCAddress,
-				KeysDir:    body.KeysDir,
-				KeyName:    body.KeyName,
-			})
-
-		if err := config.UpdateHook(); err != nil {
-			config.Update(&_config)
-			utils.WriteErrorToResponse(w, 400, &types.Error{
+		if err := config.UpdateHook(updates); err != nil {
+			utils.WriteErrorToResponse(w, 500, &types.Error{
 				Message: "failed to call the config update hook",
+				Info:    err.Error(),
+			})
+			return
+		}
+
+		config.Update(updates)
+		if err := config.SaveToPath(""); err != nil {
+			utils.WriteErrorToResponse(w, 500, &types.Error{
+				Message: "failed to save the config",
 				Info:    err.Error(),
 			})
 			return
