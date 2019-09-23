@@ -8,10 +8,6 @@ import (
 	"github.com/ironman0x7b2/client/types"
 )
 
-var (
-	_ types.Request = (*transferCoins)(nil)
-)
-
 type transferCoins struct {
 	FromAddress string      `json:"from_address"`
 	ToAddress   string      `json:"to_address"`
