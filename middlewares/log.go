@@ -15,7 +15,7 @@ func Log(next http.Handler) http.Handler {
 
 		next.ServeHTTP(rw, r)
 
-		log.Println(r.RemoteAddr, r.Proto, r.Method, r.RequestURI,
+		log.Printf("- %s - %s %s %s - %d %d - %s - %s - %s", r.RemoteAddr, r.Proto, r.Method, r.RequestURI,
 			rw.Status, rw.Length, time.Since(start), r.Referer(), r.UserAgent())
 	})
 }
