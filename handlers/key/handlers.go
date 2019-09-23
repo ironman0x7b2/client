@@ -48,6 +48,14 @@ func addKeyHandler(cli *_cli.CLI) http.HandlerFunc {
 			return
 		}
 
+		if _, err = cli.Keybase.Get(body.Name); err != nil {
+			utils.WriteErrorToResponse(w, 400, &types.Error{
+				Message: "duplicate key name",
+				Info:    err.Error(),
+			})
+			return
+		}
+
 		if body.Mnemonic == "" {
 			entropy, err := bip39.NewEntropy(256) // nolint: govet
 			if err != nil {
