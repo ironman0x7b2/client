@@ -30,15 +30,15 @@ func NewCLI(cdc *codec.Codec, kb keys.Keybase) *CLI {
 	}
 }
 
-func CreateVerifier(home, chainID, address string) (*client.HTTP, *lite.DynamicVerifier, error) {
-	root, err := ioutil.TempDir(home, "lite_")
+func NewVerifier(dir, id, address string) (*client.HTTP, *lite.DynamicVerifier, error) {
+	root, err := ioutil.TempDir(dir, "lite_")
 	if err != nil {
 		return nil, nil, err
 	}
 
 	c := client.NewHTTP(address, "/websocket")
 
-	verifier, err := proxy.NewVerifier(chainID, root, c, log.NewNopLogger(), 10)
+	verifier, err := proxy.NewVerifier(id, root, c, log.NewNopLogger(), 10)
 	if err != nil {
 		return nil, nil, err
 	}

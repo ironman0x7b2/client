@@ -48,7 +48,7 @@ func main() {
 
 	cli := _cli.NewCLI(cdc, kb)
 
-	cfg.SetUpdateHook(hooks.ConfigUpdateHook(cfg, cli))
+	cfg.SetUpdateHook(hooks.ConfigUpdateHook(cli))
 
 	router := mux.NewRouter()
 	router.Use(middlewares.AddHeaders)

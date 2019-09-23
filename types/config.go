@@ -4,57 +4,55 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"os"
-
-	"github.com/sentinel-official/hub/app"
 )
 
 type Config struct {
-	ChainID    string `json:"chain_id"`
-	RPCAddress string `json:"rpc_address"`
-	KeysDir    string `json:"keys_dir"`
-	KeyName    string `json:"key_name"`
+	ChainID         string `json:"chain_id"`
+	RPCAddress      string `json:"rpc_address"`
+	VerifierDir     string `json:"verifier_dir"`
+	KeysDir         string `json:"keys_dir"`
+	ResolverAddress string `json:"resolver_address"`
 
-	uh func() error
+	uh func(nc *Config) error
+
+	TrustNode  bool `json:"trust_node"`
+	KillSwitch bool `json:"kill_switch"`
 }
 
 func NewDefaultConfig() *Config {
 	return &Config{
-		ChainID:    "sentinel-turing-1",
-		RPCAddress: "127.0.0.1:26657",
-		KeysDir:    app.DefaultCLIHome,
-		KeyName:    "",
+		VerifierDir: DefaultConfigDir,
+		KeysDir:     DefaultConfigDir,
 	}
 }
 
-func (c *Config) Update(cfg *Config) {
-	if cfg.ChainID != "" {
-		c.ChainID = cfg.ChainID
-	}
-	if cfg.RPCAddress != "" {
-		c.RPCAddress = cfg.RPCAddress
-	}
-	if cfg.KeysDir != "" {
-		c.KeysDir = cfg.KeysDir
-	}
-	if cfg.KeyName != "" {
-		c.KeyName = cfg.KeyName
-	}
+func (c *Config) SetUpdateHook(h func(nc *Config) error) {
+	c.uh = h
 }
 
-func (c Config) Copy() Config {
-	return c
+func (c *Config) UpdateHook(nc *Config) error {
+	return c.uh(nc)
 }
 
-func (c *Config) SetUpdateHook(hook func() error) {
-	c.uh = hook
-}
-
-func (c *Config) UpdateHook() error {
-	if err := c.uh(); err != nil {
-		return err
+func (c *Config) Update(nc *Config) {
+	if nc.ChainID != "" {
+		c.ChainID = nc.ChainID
+	}
+	if nc.RPCAddress != "" {
+		c.RPCAddress = nc.RPCAddress
+	}
+	if nc.VerifierDir != "" {
+		c.VerifierDir = nc.VerifierDir
+	}
+	if nc.KeysDir != "" {
+		c.KeysDir = nc.KeysDir
+	}
+	if nc.ResolverAddress != "" {
+		c.ResolverAddress = nc.ResolverAddress
 	}
 
-	return c.SaveToPath("")
+	c.TrustNode = nc.TrustNode
+	c.KillSwitch = nc.KillSwitch
 }
 
 func (c *Config) LoadFromPath(path string) error {
@@ -63,7 +61,8 @@ func (c *Config) LoadFromPath(path string) error {
 	}
 
 	if _, err := os.Stat(path); err != nil {
-		if err := c.SaveToPath(path); err != nil {
+		err = NewDefaultConfig().SaveToPath(path)
+		if err != nil {
 			return err
 		}
 	}
@@ -71,11 +70,6 @@ func (c *Config) LoadFromPath(path string) error {
 	data, err := ioutil.ReadFile(path)
 	if err != nil {
 		return err
-	}
-
-	if len(data) == 0 {
-		*c = Config{}
-		return nil
 	}
 
 	return json.Unmarshal(data, c)
