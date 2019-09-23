@@ -36,16 +36,10 @@ func updateConfigHandler(config *types.Config) http.HandlerFunc {
 
 		config.Update(
 			&types.Config{
-				ChainID:              body.ChainID,
-				RPCAddress:           body.RPCAddress,
-				KeysDir:              body.KeysDir,
-				KeyName:              body.KeyName,
-				Bech32PrefixAccAddr:  body.Bech32PrefixAccAddr,
-				Bech32PrefixAccPub:   body.Bech32PrefixAccPub,
-				Bech32PrefixValAddr:  body.Bech32PrefixValAddr,
-				Bech32PrefixValPub:   body.Bech32PrefixValPub,
-				Bech32PrefixConsAddr: body.Bech32PrefixConsAddr,
-				Bech32PrefixConsPub:  body.Bech32PrefixConsPub,
+				ChainID:    body.ChainID,
+				RPCAddress: body.RPCAddress,
+				KeysDir:    body.KeysDir,
+				KeyName:    body.KeyName,
 			})
 
 		if err := config.UpdateHook(); err != nil {

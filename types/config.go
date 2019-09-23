@@ -6,36 +6,23 @@ import (
 	"os"
 
 	"github.com/sentinel-official/hub/app"
-	hub "github.com/sentinel-official/hub/types"
 )
 
 type Config struct {
-	ChainID              string `json:"chain_id"`
-	RPCAddress           string `json:"rpc_address"`
-	KeysDir              string `json:"keys_dir"`
-	KeyName              string `json:"key_name"`
-	Bech32PrefixAccAddr  string `json:"bech_32_prefix_acc_addr"`
-	Bech32PrefixAccPub   string `json:"bech_32_prefix_acc_pub"`
-	Bech32PrefixValAddr  string `json:"bech_32_prefix_val_addr"`
-	Bech32PrefixValPub   string `json:"bech_32_prefix_val_pub"`
-	Bech32PrefixConsAddr string `json:"bech_32_prefix_cons_addr"`
-	Bech32PrefixConsPub  string `json:"bech_32_prefix_cons_pub"`
+	ChainID    string `json:"chain_id"`
+	RPCAddress string `json:"rpc_address"`
+	KeysDir    string `json:"keys_dir"`
+	KeyName    string `json:"key_name"`
 
 	uh func() error
 }
 
 func NewDefaultConfig() *Config {
 	return &Config{
-		ChainID:              "sentinel-turing-1",
-		RPCAddress:           "127.0.0.1:26657",
-		KeysDir:              app.DefaultCLIHome,
-		KeyName:              "",
-		Bech32PrefixAccAddr:  hub.Bech32PrefixAccAddr,
-		Bech32PrefixAccPub:   hub.Bech32PrefixAccPub,
-		Bech32PrefixValAddr:  hub.Bech32PrefixValAddr,
-		Bech32PrefixValPub:   hub.Bech32PrefixValPub,
-		Bech32PrefixConsAddr: hub.Bech32PrefixConsAddr,
-		Bech32PrefixConsPub:  hub.Bech32PrefixConsPub,
+		ChainID:    "sentinel-turing-1",
+		RPCAddress: "127.0.0.1:26657",
+		KeysDir:    app.DefaultCLIHome,
+		KeyName:    "",
 	}
 }
 
@@ -51,24 +38,6 @@ func (c *Config) Update(cfg *Config) {
 	}
 	if cfg.KeyName != "" {
 		c.KeyName = cfg.KeyName
-	}
-	if cfg.Bech32PrefixAccAddr != "" {
-		c.Bech32PrefixAccAddr = cfg.Bech32PrefixAccAddr
-	}
-	if cfg.Bech32PrefixAccPub != "" {
-		c.Bech32PrefixAccPub = cfg.Bech32PrefixAccPub
-	}
-	if cfg.Bech32PrefixValAddr != "" {
-		c.Bech32PrefixValAddr = cfg.Bech32PrefixValAddr
-	}
-	if cfg.Bech32PrefixValPub != "" {
-		c.Bech32PrefixValPub = cfg.Bech32PrefixValPub
-	}
-	if cfg.Bech32PrefixConsAddr != "" {
-		c.Bech32PrefixConsAddr = cfg.Bech32PrefixConsAddr
-	}
-	if cfg.Bech32PrefixConsPub != "" {
-		c.Bech32PrefixConsPub = cfg.Bech32PrefixConsPub
 	}
 }
 

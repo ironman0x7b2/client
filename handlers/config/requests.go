@@ -6,16 +6,10 @@ import (
 )
 
 type updateConfig struct {
-	ChainID              string `json:"chain_id"`
-	RPCAddress           string `json:"rpc_address"`
-	KeysDir              string `json:"keys_dir"`
-	KeyName              string `json:"key_name"`
-	Bech32PrefixAccAddr  string `json:"bech_32_prefix_acc_addr"`
-	Bech32PrefixAccPub   string `json:"bech_32_prefix_acc_pub"`
-	Bech32PrefixValAddr  string `json:"bech_32_prefix_val_addr"`
-	Bech32PrefixValPub   string `json:"bech_32_prefix_val_pub"`
-	Bech32PrefixConsAddr string `json:"bech_32_prefix_cons_addr"`
-	Bech32PrefixConsPub  string `json:"bech_32_prefix_cons_pub"`
+	ChainID    string `json:"chain_id"`
+	RPCAddress string `json:"rpc_address"`
+	KeysDir    string `json:"keys_dir"`
+	KeyName    string `json:"key_name"`
 }
 
 func newUpdateConfig(r *http.Request) (*updateConfig, error) {
