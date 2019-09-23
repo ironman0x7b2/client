@@ -3,11 +3,19 @@ package middlewares
 import (
 	"log"
 	"net/http"
+	"time"
+
+	"github.com/ironman0x7b2/client/types"
 )
 
 func Log(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		log.Println(r.RemoteAddr, r.Method, r.RequestURI)
-		next.ServeHTTP(w, r)
+		rw := types.NewResponseWriter(w)
+		start := time.Now()
+
+		next.ServeHTTP(rw, r)
+
+		log.Println(r.RemoteAddr, r.Proto, r.Method, r.RequestURI,
+			rw.Status, rw.Length, time.Since(start), r.Referer(), r.UserAgent())
 	})
 }
