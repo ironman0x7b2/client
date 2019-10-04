@@ -9,6 +9,7 @@ import (
 )
 
 type transferCoins struct {
+	From        string      `json:"from"`
 	FromAddress string      `json:"from_address"`
 	ToAddress   string      `json:"to_address"`
 	Amount      types.Coins `json:"amount"`

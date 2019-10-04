@@ -3,15 +3,11 @@ module github.com/ironman0x7b2/client
 go 1.13
 
 require (
-	bou.ke/monkey v1.0.1 // indirect
 	github.com/cosmos/cosmos-sdk v0.37.1
 	github.com/cosmos/go-bip39 v0.0.0-20180819234021-555e2067c45d
 	github.com/gorilla/mux v1.7.3
 	github.com/onsi/ginkgo v1.8.0 // indirect
 	github.com/onsi/gomega v1.5.0 // indirect
-	github.com/otiai10/copy v0.0.0-20180813032824-7e9a647135a1 // indirect
-	github.com/otiai10/curr v0.0.0-20150429015615-9b4961190c95 // indirect
-	github.com/otiai10/mint v1.2.3 // indirect
 	github.com/prometheus/common v0.7.0 // indirect
 	github.com/prometheus/procfs v0.0.5 // indirect
 	github.com/sentinel-official/hub v0.1.1-0.20190907133909-afcd1e88821a
