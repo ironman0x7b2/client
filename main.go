@@ -16,6 +16,7 @@ import (
 	"github.com/ironman0x7b2/client/handlers/account"
 	"github.com/ironman0x7b2/client/handlers/config"
 	"github.com/ironman0x7b2/client/handlers/key"
+	"github.com/ironman0x7b2/client/handlers/profile"
 	"github.com/ironman0x7b2/client/handlers/validators"
 	"github.com/ironman0x7b2/client/hooks"
 	"github.com/ironman0x7b2/client/middlewares"
@@ -70,6 +71,7 @@ func main() {
 	key.RegisterRoutes(router, cli)
 	account.RegisterRoutes(router, cli)
 	validators.RegisterRoutes(router, cli)
+	profile.RegisterRoutes(router, cli)
 
 	panic(http.ListenAndServe(address, router))
 }
