@@ -12,7 +12,7 @@ import (
 	"github.com/ironman0x7b2/client/types"
 )
 
-func GetDelegatorDelegations(cli *CLI, address sdk.AccAddress) (staking.Delegations, *types.Error) {
+func (cli *CLI, ) GetDelegatorDelegations(address sdk.AccAddress) (staking.Delegations, *types.Error) {
 	params := staking.NewQueryDelegatorParams(address)
 
 	bz, err := cli.Codec.MarshalJSON(params)
@@ -43,7 +43,7 @@ func GetDelegatorDelegations(cli *CLI, address sdk.AccAddress) (staking.Delegati
 	return delegations, nil
 }
 
-func GetDelegatorValidators(cli *CLI, address sdk.AccAddress) (staking.Validators, *types.Error) {
+func (cli *CLI, ) GetDelegatorValidators(address sdk.AccAddress) (staking.Validators, *types.Error) {
 	params := staking.NewQueryDelegatorParams(address)
 
 	bz, err := cli.Codec.MarshalJSON(params)
@@ -74,8 +74,15 @@ func GetDelegatorValidators(cli *CLI, address sdk.AccAddress) (staking.Validator
 	return validators, nil
 }
 
-func GetAllValidators() (interface{}, *types.Error) {
-	url := types.EXPLORER + "/validators"
+func (cli *CLI, ) GetAllValidators() (interface{}, *types.Error) {
+	if cli.ExplorerAddress == "" {
+		return nil, &types.Error{
+			Message: "no explorer address defined",
+			Info:    "",
+		}
+	}
+
+	url := "http://" + cli.ExplorerAddress + "/validators"
 
 	res, err := http.Get(url)
 	if err != nil {
@@ -105,8 +112,15 @@ func GetAllValidators() (interface{}, *types.Error) {
 	return validators, nil
 }
 
-func GetValidator(address string) (interface{}, *types.Error) {
-	url := types.EXPLORER + "/validators/" + address
+func (cli *CLI) GetValidator(address string) (interface{}, *types.Error) {
+	if cli.ExplorerAddress == "" {
+		return nil, &types.Error{
+			Message: "no explorer address defined",
+			Info:    "",
+		}
+	}
+
+	url := "http://" + cli.ExplorerAddress + "/validators/" + address
 
 	res, err := http.Get(url)
 	if err != nil {

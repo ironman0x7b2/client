@@ -117,7 +117,7 @@ func getDelegatorDelegations(cli *_cli.CLI) http.HandlerFunc {
 			return
 		}
 
-		delegations, _err := _cli.GetDelegatorDelegations(cli, address)
+		delegations, _err := cli.GetDelegatorDelegations(address)
 		if _err != nil {
 			utils.WriteErrorToResponse(w, 400, _err)
 			return
@@ -140,7 +140,7 @@ func getDelegatorValidators(cli *_cli.CLI) http.HandlerFunc {
 			return
 		}
 
-		validators, _err := _cli.GetDelegatorValidators(cli, address)
+		validators, _err := cli.GetDelegatorValidators(address)
 		if _err != nil {
 			utils.WriteErrorToResponse(w, 400, _err)
 			return
@@ -150,9 +150,9 @@ func getDelegatorValidators(cli *_cli.CLI) http.HandlerFunc {
 	}
 }
 
-func getAllValidators() http.HandlerFunc {
+func getAllValidators(cli *_cli.CLI) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		validator, err := _cli.GetAllValidators()
+		validator, err := cli.GetAllValidators()
 		if err != nil {
 			utils.WriteErrorToResponse(w, 400, err)
 			return
@@ -162,11 +162,11 @@ func getAllValidators() http.HandlerFunc {
 	}
 }
 
-func getValidator() http.HandlerFunc {
+func getValidator(cli *_cli.CLI) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 
-		validator, err := _cli.GetValidator(vars["address"])
+		validator, err := cli.GetValidator(vars["address"])
 		if err != nil {
 			utils.WriteErrorToResponse(w, 400, err)
 			return

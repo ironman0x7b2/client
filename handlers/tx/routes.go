@@ -9,5 +9,5 @@ import (
 func RegisterRoutes(r *mux.Router, cli *_cli.CLI) {
 	r.Name("GetTransactionDetails").
 		Methods("GET").Path("/txs/{hash}").
-		HandlerFunc(getTx())
+		HandlerFunc(getTx(cli))
 }

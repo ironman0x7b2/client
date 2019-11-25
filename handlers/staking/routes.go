@@ -16,10 +16,10 @@ func RegisterRoutes(r *mux.Router, cli *_cli.CLI) {
 
 	r.Name("GetAllValidators").
 		Methods("GET").Path("/validators").
-		HandlerFunc(getAllValidators())
+		HandlerFunc(getAllValidators(cli))
 	r.Name("GetValidator").
 		Methods("GET").Path("/validators/{address}").
-		HandlerFunc(getValidator())
+		HandlerFunc(getValidator(cli))
 
 	r.Name("Delegate").
 		Methods("POST").Path("/delegations/{valAddress}").
