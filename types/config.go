@@ -91,3 +91,5 @@ func (c *Config) SaveToPath(path string) error {
 func (c *Config) Validate() error {
 	return nil
 }
+
+const EXPLORER = "http://localhost:8000"
