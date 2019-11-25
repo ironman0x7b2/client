@@ -9,6 +9,7 @@ import (
 )
 
 type transferCoins struct {
+	From        string      `json:"from"`
 	FromAddress string      `json:"from_address"`
 	ToAddress   string      `json:"to_address"`
 	Amount      types.Coins `json:"amount"`
@@ -32,6 +33,9 @@ func newTransferCoins(r *http.Request) (*transferCoins, error) {
 }
 
 func (t *transferCoins) Validate() error {
+	if t.From == "" {
+		return fmt.Errorf("invalid field from")
+	}
 	if t.FromAddress == "" {
 		return fmt.Errorf("invalid field from_address")
 	}
