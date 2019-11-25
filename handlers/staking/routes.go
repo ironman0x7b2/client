@@ -7,7 +7,6 @@ import (
 )
 
 func RegisterRoutes(r *mux.Router, cli *_cli.CLI) {
-
 	r.Name("GetAllDelegatorDelegations").
 		Methods("GET").Path("/accounts/{address}/delegations").
 		HandlerFunc(getDelegatorDelegations(cli))
