@@ -48,10 +48,19 @@ func addKeyHandler(cli *_cli.CLI) http.HandlerFunc {
 			return
 		}
 
-		if _, err = cli.Keybase.Get(body.Name); err != nil {
+		info, err := cli.Keybase.Get(body.Name)
+		if err != nil {
+			utils.WriteErrorToResponse(w, 400, &types.Error{
+				Message: "failed to get the key info",
+				Info:    err.Error(),
+			})
+			return
+		}
+
+		if info != nil {
 			utils.WriteErrorToResponse(w, 400, &types.Error{
 				Message: "duplicate key name",
-				Info:    err.Error(),
+				Info:    "",
 			})
 			return
 		}
@@ -76,7 +85,7 @@ func addKeyHandler(cli *_cli.CLI) http.HandlerFunc {
 			}
 		}
 
-		info, err := cli.Keybase.CreateAccount(body.Name, body.Mnemonic, body.BIP39Password, body.Password, 0, 0)
+		info, err = cli.Keybase.CreateAccount(body.Name, body.Mnemonic, body.BIP39Password, body.Password, 0, 0)
 		if err != nil {
 			utils.WriteErrorToResponse(w, 500, &types.Error{
 				Message: "failed to create the key",

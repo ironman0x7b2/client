@@ -68,6 +68,8 @@ func transferCoinsHandler(cli *_cli.CLI) http.HandlerFunc {
 			return
 		}
 
+		cli.CLIContext = cli.WithFromName(body.From)
+
 		res, err := cli.Tx([]sdk.Msg{msg}, body.Memo, body.Gas, body.GasAdjustment,
 			body.GasPrices.Raw(), body.Fees.Raw(), body.Password)
 		if err != nil {
