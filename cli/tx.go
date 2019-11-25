@@ -1,9 +1,15 @@
 package cli
 
 import (
+	"encoding/json"
+	"io/ioutil"
+	"net/http"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/auth/client/utils"
+
+	"github.com/ironman0x7b2/client/types"
 )
 
 func (c *CLI) Tx(messages []sdk.Msg, memo string, gas uint64, gasAdjustment float64,
@@ -41,4 +47,35 @@ func (c *CLI) Tx(messages []sdk.Msg, memo string, gas uint64, gasAdjustment floa
 
 	res := sdk.NewResponseFormatBroadcastTx(result)
 	return &res, nil
+}
+
+func GetTx(hash string) (interface{}, *types.Error) {
+	url := types.EXPLORER + "/txs/" + hash
+
+	res, err := http.Get(url)
+	if err != nil {
+		return nil, &types.Error{
+			Message: "failed to get transaction",
+			Info:    err.Error(),
+		}
+	}
+
+	body, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		return nil, &types.Error{
+			Message: "failed to read response body",
+			Info:    err.Error(),
+		}
+	}
+
+	var tx interface{}
+	err = json.Unmarshal(body, &tx)
+	if err != nil {
+		return nil, &types.Error{
+			Message: "failed to unmarshal transaction",
+			Info:    err.Error(),
+		}
+	}
+
+	return tx, nil
 }
