@@ -5,11 +5,11 @@ import (
 
 	"github.com/gorilla/mux"
 
-	"github.com/ironman0x7b2/client/cli"
+	_cli "github.com/ironman0x7b2/client/cli"
 	"github.com/ironman0x7b2/client/utils"
 )
 
-func getTx() http.HandlerFunc {
+func getTx(cli *_cli.CLI) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 

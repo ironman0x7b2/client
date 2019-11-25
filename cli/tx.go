@@ -49,8 +49,15 @@ func (c *CLI) Tx(messages []sdk.Msg, memo string, gas uint64, gasAdjustment floa
 	return &res, nil
 }
 
-func GetTx(hash string) (interface{}, *types.Error) {
-	url := types.EXPLORER + "/txs/" + hash
+func (cli *CLI) GetTx(hash string) (interface{}, *types.Error) {
+	if cli.ExplorerAddress == "" {
+		return nil, &types.Error{
+			Message: "no explorer address defined",
+			Info:    "",
+		}
+	}
+
+	url := "http://" + cli.ExplorerAddress + "/txs/" + hash
 
 	res, err := http.Get(url)
 	if err != nil {
