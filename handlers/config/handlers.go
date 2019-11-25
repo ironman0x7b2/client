@@ -35,6 +35,7 @@ func updateConfigHandler(config *types.Config) http.HandlerFunc {
 		updates := &types.Config{
 			ChainID:         body.ChainID,
 			RPCAddress:      body.RPCAddress,
+			ExplorerAddress: body.ExplorerAddress,
 			VerifierDir:     body.VerifierDir,
 			TrustNode:       body.TrustNode,
 			KeysDir:         body.KeysDir,
