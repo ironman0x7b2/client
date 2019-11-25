@@ -21,6 +21,10 @@ func ConfigUpdateHook(cli *_cli.CLI) func(*types.Config) error {
 			}
 		}
 
+		if c.ExplorerAddress != "" {
+			cli.ExplorerAddress = c.ExplorerAddress
+		}
+
 		var _client *client.HTTP
 		var _verifier *lite.DynamicVerifier
 

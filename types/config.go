@@ -9,6 +9,7 @@ import (
 type Config struct {
 	ChainID         string `json:"chain_id"`
 	RPCAddress      string `json:"rpc_address"`
+	ExplorerAddress string `json:"explorer_address"`
 	VerifierDir     string `json:"verifier_dir"`
 	KeysDir         string `json:"keys_dir"`
 	ResolverAddress string `json:"resolver_address"`
@@ -40,6 +41,9 @@ func (c *Config) Update(nc *Config) {
 	}
 	if nc.RPCAddress != "" {
 		c.RPCAddress = nc.RPCAddress
+	}
+	if nc.ExplorerAddress != "" {
+		c.ExplorerAddress = nc.ExplorerAddress
 	}
 	if nc.VerifierDir != "" {
 		c.VerifierDir = nc.VerifierDir
