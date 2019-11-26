@@ -27,4 +27,7 @@ func RegisterRoutes(r *mux.Router, cli *_cli.CLI) {
 	r.Name("ReDelegate").
 		Methods("POST").Path("/reDelegations/{valSrcAddress}").
 		HandlerFunc(reDelegateHandler(cli))
+	r.Name("UnDelegate").
+		Methods("POST").Path("/unDelegations/{valAddress}").
+		HandlerFunc(unDelegateHandler(cli))
 }
