@@ -47,3 +47,37 @@ func (p *Proposal) Raw() (proposal gov.MsgSubmitProposal, err error) {
 
 	return proposal, nil
 }
+
+type ProposalDeposits struct {
+	FromAddress string      `json:"from_address"`
+	ProposalID  uint64      `json:"proposal_id"`
+	Amount      types.Coins `json:"amount"`
+}
+
+func NewProposalDeposits(fromAddress string, proposalID uint64, deposit types.Coins) *ProposalDeposits {
+	return &ProposalDeposits{
+		FromAddress: fromAddress,
+		ProposalID:  proposalID,
+		Amount:      deposit,
+	}
+}
+
+func NewProposalDepositsFromRaw(m *gov.MsgDeposit) *ProposalDeposits {
+	return &ProposalDeposits{
+		FromAddress: common.HexBytes(m.Depositor.Bytes()).String(),
+		ProposalID:  m.ProposalID,
+		Amount:      types.NewCoinsFromRaw(m.Amount),
+	}
+}
+
+func (p *ProposalDeposits) Raw() (deposit gov.MsgDeposit, err error) {
+	deposit.Depositor, err = sdk.AccAddressFromHex(p.FromAddress)
+	if err != nil {
+		return deposit, err
+	}
+
+	deposit.ProposalID = p.ProposalID
+	deposit.Amount = p.Amount.Raw()
+
+	return deposit, nil
+}
