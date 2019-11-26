@@ -14,7 +14,6 @@ import (
 
 func (c *CLI) Tx(messages []sdk.Msg, memo string, gas uint64, gasAdjustment float64,
 	prices sdk.DecCoins, fees sdk.Coins, password string) (*sdk.TxResponse, error) {
-
 	key, err := c.Keybase.Get(c.FromName)
 	if err != nil {
 		return nil, err
