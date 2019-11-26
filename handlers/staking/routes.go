@@ -9,25 +9,25 @@ import (
 func RegisterRoutes(r *mux.Router, cli *_cli.CLI) {
 	r.Name("GetAllDelegatorDelegations").
 		Methods("GET").Path("/accounts/{address}/delegations").
-		HandlerFunc(getDelegatorDelegations(cli))
+		HandlerFunc(getDelegatorDelegationsHandler(cli))
 	r.Name("GetAllDelegatorValidators").
 		Methods("GET").Path("/accounts/{address}/delegations/validators").
-		HandlerFunc(getDelegatorValidators(cli))
+		HandlerFunc(getDelegatorValidatorsHandler(cli))
 
 	r.Name("GetAllValidators").
 		Methods("GET").Path("/validators").
-		HandlerFunc(getAllValidators(cli))
+		HandlerFunc(getAllValidatorsHandler(cli))
 	r.Name("GetValidator").
 		Methods("GET").Path("/validators/{address}").
-		HandlerFunc(getValidator(cli))
+		HandlerFunc(getValidatorHandler(cli))
 
 	r.Name("Delegate").
-		Methods("POST").Path("/delegations/{valAddress}").
-		HandlerFunc(delegateHandler(cli))
+		Methods("POST").Path("/delegations/{validatorAddress}").
+		HandlerFunc(delegationHandler(cli))
 	r.Name("ReDelegate").
-		Methods("POST").Path("/reDelegations/{valSrcAddress}").
-		HandlerFunc(reDelegateHandler(cli))
+		Methods("PUT").Path("/re-delegation/{valSrcAddress}").
+		HandlerFunc(reDelegationHandler(cli))
 	r.Name("UnDelegate").
-		Methods("POST").Path("/unDelegations/{valAddress}").
-		HandlerFunc(unDelegateHandler(cli))
+		Methods("DELETE").Path("/un-delegation/{validatorAddress}").
+		HandlerFunc(unDelegationHandler(cli))
 }

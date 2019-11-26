@@ -8,6 +8,6 @@ import (
 
 func RegisterRoutes(r *mux.Router, cli *_cli.CLI) {
 	r.Name("Withdraw-rewards").
-		Methods("POST").Path("/accounts/{valAddress}/rewards").
+		Methods("POST").Path("/accounts/{validatorAddress}/rewards").
 		HandlerFunc(rewardsHandler(cli))
 }

@@ -9,9 +9,122 @@ import (
 
 	_cli "github.com/ironman0x7b2/client/cli"
 	"github.com/ironman0x7b2/client/messages"
+	"github.com/ironman0x7b2/client/models"
 	"github.com/ironman0x7b2/client/types"
 	"github.com/ironman0x7b2/client/utils"
 )
+
+func getAllProposalsHandler(cli *_cli.CLI) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var limit uint64
+
+		if l := r.URL.Query().Get("limit"); len(l) != 0 {
+			i, err := strconv.ParseUint(l, 10, 64)
+			if err != nil {
+				utils.WriteErrorToResponse(w, 400, err)
+				return
+			}
+			limit = i
+		}
+
+		proposals, err := cli.GetAllProposals(limit)
+		if err != nil {
+			utils.WriteErrorToResponse(w, 400, err)
+			return
+		}
+
+		utils.WriteResultToResponse(w, 200, proposals)
+	}
+}
+
+func getProposalHandler(cli *_cli.CLI) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+
+		var pid uint64
+		id := vars["id"]
+		if len(id) != 0 {
+			_id, err := strconv.ParseUint(id, 10, 64)
+			if err != nil {
+				utils.WriteErrorToResponse(w, 400, err)
+				return
+			}
+			pid = _id
+		}
+
+		proposal, err := cli.GetProposal(pid)
+		if err != nil {
+			utils.WriteErrorToResponse(w, 400, err)
+			return
+		}
+
+		utils.WriteResultToResponse(w, 200, proposal)
+	}
+}
+
+func getProposalVotesHandler(cli *_cli.CLI) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+
+		var pid uint64
+		id := vars["id"]
+		if len(id) != 0 {
+			_id, err := strconv.ParseUint(id, 10, 64)
+			if err != nil {
+				utils.WriteErrorToResponse(w, 400, err)
+				return
+			}
+			pid = _id
+		}
+
+		votes, err := cli.GetProposalVotes(pid)
+		if err != nil {
+			utils.WriteErrorToResponse(w, 400, err)
+			return
+		}
+
+		_votes := models.NewVotesFromRaw(votes)
+		utils.WriteResultToResponse(w, 200, _votes)
+	}
+}
+
+func getProposalVoteHandler(cli *_cli.CLI) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+
+		var pid uint64
+		var vAddress sdk.AccAddress
+
+		id := vars["id"]
+		if len(id) != 0 {
+			_id, err := strconv.ParseUint(id, 10, 64)
+			if err != nil {
+				utils.WriteErrorToResponse(w, 400, err)
+				return
+			}
+			pid = _id
+		}
+
+		address := vars["address"]
+		if len(id) != 0 {
+			_address, err := sdk.AccAddressFromHex(address)
+			if err != nil {
+				utils.WriteErrorToResponse(w, 400, err)
+				return
+			}
+			vAddress = _address
+		}
+
+		vote, err := cli.GetProposalVote(pid, vAddress)
+		if err != nil {
+			utils.WriteErrorToResponse(w, 400, err)
+			return
+		}
+
+		_vote := models.NewVoteFromRaw(vote)
+		utils.WriteResultToResponse(w, 200, _vote)
+	}
+}
 
 func submitProposalHandler(cli *_cli.CLI) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -164,115 +277,5 @@ func proposalVotesHandler(cli *_cli.CLI) http.HandlerFunc {
 		}
 
 		utils.WriteResultToResponse(w, 200, res)
-	}
-}
-
-func getAllProposals(cli *_cli.CLI) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		var limit uint64
-
-		if l := r.URL.Query().Get("limit"); len(l) != 0 {
-			i, err := strconv.ParseUint(l, 10, 64)
-			if err != nil {
-				utils.WriteErrorToResponse(w, 400, err)
-				return
-			}
-			limit = i
-		}
-
-		validator, err := cli.GetAllProposals(limit)
-		if err != nil {
-			utils.WriteErrorToResponse(w, 400, err)
-			return
-		}
-
-		utils.WriteResultToResponse(w, 200, validator)
-	}
-}
-
-func getProposal(cli *_cli.CLI) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
-
-		var pid uint64
-		id := vars["id"]
-		if len(id) != 0 {
-			_id, err := strconv.ParseUint(id, 10, 64)
-			if err != nil {
-				utils.WriteErrorToResponse(w, 400, err)
-				return
-			}
-			pid = _id
-		}
-
-		validator, err := cli.GetProposal(pid)
-		if err != nil {
-			utils.WriteErrorToResponse(w, 400, err)
-			return
-		}
-
-		utils.WriteResultToResponse(w, 200, validator)
-	}
-}
-
-func getProposalVotes(cli *_cli.CLI) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
-
-		var pid uint64
-		id := vars["id"]
-		if len(id) != 0 {
-			_id, err := strconv.ParseUint(id, 10, 64)
-			if err != nil {
-				utils.WriteErrorToResponse(w, 400, err)
-				return
-			}
-			pid = _id
-		}
-
-		validator, err := cli.GetProposalVotes(pid)
-		if err != nil {
-			utils.WriteErrorToResponse(w, 400, err)
-			return
-		}
-
-		utils.WriteResultToResponse(w, 200, validator)
-	}
-}
-
-func getProposalVoter(cli *_cli.CLI) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
-
-		var pid uint64
-		var vAddress sdk.AccAddress
-
-		id := vars["id"]
-		if len(id) != 0 {
-			_id, err := strconv.ParseUint(id, 10, 64)
-			if err != nil {
-				utils.WriteErrorToResponse(w, 400, err)
-				return
-			}
-			pid = _id
-		}
-
-		address := vars["address"]
-		if len(id) != 0 {
-			_address, err := sdk.AccAddressFromHex(address)
-			if err != nil {
-				utils.WriteErrorToResponse(w, 400, err)
-				return
-			}
-			vAddress = _address
-		}
-
-		validator, err := cli.GetProposalVoter(pid, vAddress)
-		if err != nil {
-			utils.WriteErrorToResponse(w, 400, err)
-			return
-		}
-
-		utils.WriteResultToResponse(w, 200, validator)
 	}
 }

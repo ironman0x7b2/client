@@ -33,7 +33,7 @@ func rewardsHandler(cli *_cli.CLI) http.HandlerFunc {
 			return
 		}
 
-		msg, err := messages.NewRewards(body.FromAddress, vars["valAddress"]).Raw()
+		msg, err := messages.NewRewards(body.FromAddress, vars["validatorAddress"]).Raw()
 		if err != nil {
 			utils.WriteErrorToResponse(w, 400, &types.Error{
 				Message: "failed to prepare the transfer message",
