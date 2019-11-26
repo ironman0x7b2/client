@@ -48,15 +48,7 @@ func addKeyHandler(cli *_cli.CLI) http.HandlerFunc {
 			return
 		}
 
-		info, err := cli.Keybase.Get(body.Name)
-		if err != nil {
-			utils.WriteErrorToResponse(w, 400, &types.Error{
-				Message: "failed to get the key info",
-				Info:    err.Error(),
-			})
-			return
-		}
-
+		info, _ := cli.Keybase.Get(body.Name)
 		if info != nil {
 			utils.WriteErrorToResponse(w, 400, &types.Error{
 				Message: "duplicate key name",
