@@ -99,3 +99,43 @@ func (p *proposalDeposits) Validate() error {
 
 	return nil
 }
+
+type proposalVotes struct {
+	From        string `json:"from"`
+	FromAddress string `json:"from_address"`
+	Option      string `json:"option"`
+
+	Memo          string         `json:"memo"`
+	Fees          types.Coins    `json:"fees"`
+	GasPrices     types.DecCoins `json:"gas_prices"`
+	Gas           uint64         `json:"gas"`
+	GasAdjustment float64        `json:"gas_adjustment"`
+
+	Password string `json:"password"`
+}
+
+func newProposalVotes(r *http.Request) (*proposalVotes, error) {
+	var body proposalVotes
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		return nil, err
+	}
+
+	return &body, nil
+}
+
+func (p *proposalVotes) Validate() error {
+	if p.From == "" {
+		return fmt.Errorf("invalid field from")
+	}
+	if p.FromAddress == "" {
+		return fmt.Errorf("invalid field from_address")
+	}
+	if p.Option == "" {
+		return fmt.Errorf("invalid field option")
+	}
+	if p.Password == "" {
+		return fmt.Errorf("invalid field password")
+	}
+
+	return nil
+}

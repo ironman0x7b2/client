@@ -3,6 +3,7 @@ package messages
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/gov"
+	gcutils "github.com/cosmos/cosmos-sdk/x/gov/client/utils"
 	"github.com/tendermint/tendermint/libs/common"
 
 	"github.com/ironman0x7b2/client/types"
@@ -80,4 +81,43 @@ func (p *ProposalDeposits) Raw() (deposit gov.MsgDeposit, err error) {
 	deposit.Amount = p.Amount.Raw()
 
 	return deposit, nil
+}
+
+type ProposalVotes struct {
+	FromAddress string `json:"from_address"`
+	ProposalID  uint64 `json:"proposal_id"`
+	Option      string `json:"option"`
+}
+
+func NewProposalVotes(fromAddress string, proposalID uint64, option string) *ProposalVotes {
+	return &ProposalVotes{
+		FromAddress: fromAddress,
+		ProposalID:  proposalID,
+		Option:      option,
+	}
+}
+
+func NewProposalVotesFromRaw(m *gov.MsgVote) *ProposalVotes {
+	return &ProposalVotes{
+		FromAddress: common.HexBytes(m.Voter.Bytes()).String(),
+		ProposalID:  m.ProposalID,
+		Option:      m.Option.String(),
+	}
+}
+
+func (p *ProposalVotes) Raw() (vote gov.MsgVote, err error) {
+	vote.Voter, err = sdk.AccAddressFromHex(p.FromAddress)
+	if err != nil {
+		return vote, err
+	}
+
+	option, err := gov.VoteOptionFromString(gcutils.NormalizeVoteOption(p.Option))
+	if err != nil {
+		return vote, err
+	}
+
+	vote.ProposalID = p.ProposalID
+	vote.Option = option
+
+	return vote, nil
 }

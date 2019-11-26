@@ -13,7 +13,7 @@ func RegisterRoutes(r *mux.Router, cli *_cli.CLI) {
 	r.Name("ProposalDeposit").
 		Methods("POST").Path("/proposals/{id}/deposits").
 		HandlerFunc(proposalDepositsHandler(cli))
-	r.Name("SubmitProposals").
-		Methods("POST").Path("/proposals").
-		HandlerFunc(submitProposalHandler(cli))
+	r.Name("ProposalsVotes").
+		Methods("POST").Path("/proposals/{id}/votes").
+		HandlerFunc(proposalVotesHandler(cli))
 }
