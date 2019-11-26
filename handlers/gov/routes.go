@@ -7,6 +7,19 @@ import (
 )
 
 func RegisterRoutes(r *mux.Router, cli *_cli.CLI) {
+	r.Name("GetAllProposals").
+		Methods("GET").Path("/proposals").
+		HandlerFunc(getAllProposalsHandler(cli))
+	r.Name("GetProposal").
+		Methods("GET").Path("/proposals/{id}").
+		HandlerFunc(getProposalHandler(cli))
+	r.Name("GetProposalVotes").
+		Methods("GET").Path("/proposals/{id}/votes").
+		HandlerFunc(getProposalVotesHandler(cli))
+	r.Name("GetProposalVote").
+		Methods("GET").Path("/proposals/{id}/voters/{address}").
+		HandlerFunc(getProposalVoteHandler(cli))
+
 	r.Name("SubmitProposals").
 		Methods("POST").Path("/proposals").
 		HandlerFunc(submitProposalHandler(cli))
@@ -16,17 +29,4 @@ func RegisterRoutes(r *mux.Router, cli *_cli.CLI) {
 	r.Name("ProposalsVotes").
 		Methods("POST").Path("/proposals/{id}/votes").
 		HandlerFunc(proposalVotesHandler(cli))
-
-	r.Name("GetAllProposals").
-		Methods("GET").Path("/proposals").
-		HandlerFunc(getAllProposals(cli))
-	r.Name("GetProposal").
-		Methods("GET").Path("/proposals/{id}").
-		HandlerFunc(getProposal(cli))
-	r.Name("GetProposalVotes").
-		Methods("GET").Path("/proposals/{id}/votes").
-		HandlerFunc(getProposalVotes(cli))
-	r.Name("GetProposalVoter").
-		Methods("GET").Path("/proposals/{id}/voters/{address}").
-		HandlerFunc(getProposalVoter(cli))
 }

@@ -8,11 +8,86 @@ import (
 
 	_cli "github.com/ironman0x7b2/client/cli"
 	"github.com/ironman0x7b2/client/messages"
+	"github.com/ironman0x7b2/client/models"
 	"github.com/ironman0x7b2/client/types"
 	"github.com/ironman0x7b2/client/utils"
 )
 
-func delegateHandler(cli *_cli.CLI) http.HandlerFunc {
+func getDelegatorDelegationsHandler(cli *_cli.CLI) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+
+		address, err := sdk.AccAddressFromHex(vars["address"])
+		if err != nil {
+			utils.WriteErrorToResponse(w, 400, &types.Error{
+				Message: "failed to get address",
+				Info:    err.Error(),
+			})
+			return
+		}
+
+		delegations, _err := cli.GetDelegatorDelegations(address)
+		if _err != nil {
+			utils.WriteErrorToResponse(w, 400, _err)
+			return
+		}
+
+		_delegations := models.NewDelegationsFromRaw(delegations)
+		utils.WriteResultToResponse(w, 200, _delegations)
+	}
+}
+
+func getDelegatorValidatorsHandler(cli *_cli.CLI) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+
+		address, err := sdk.AccAddressFromHex(vars["address"])
+		if err != nil {
+			utils.WriteErrorToResponse(w, 400, &types.Error{
+				Message: "failed to get address",
+				Info:    err.Error(),
+			})
+			return
+		}
+
+		validators, _err := cli.GetDelegatorValidators(address)
+		if _err != nil {
+			utils.WriteErrorToResponse(w, 400, _err)
+			return
+		}
+
+		_validators := models.NewValidatorsFromRaw(validators)
+		utils.WriteResultToResponse(w, 200, _validators)
+	}
+}
+
+func getAllValidatorsHandler(cli *_cli.CLI) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		validator, err := cli.GetAllValidators()
+		if err != nil {
+			utils.WriteErrorToResponse(w, 400, err)
+			return
+		}
+
+		utils.WriteResultToResponse(w, 200, validator)
+	}
+}
+
+func getValidatorHandler(cli *_cli.CLI) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+
+		validator, err := cli.GetValidator(vars["address"])
+		if err != nil {
+			utils.WriteErrorToResponse(w, 400, err)
+			return
+		}
+
+		utils.WriteResultToResponse(w, 200, validator)
+	}
+}
+
+func delegationHandler(cli *_cli.CLI) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 
@@ -33,7 +108,7 @@ func delegateHandler(cli *_cli.CLI) http.HandlerFunc {
 			return
 		}
 
-		msg, err := messages.NewDelegate(body.FromAddress, vars["valAddress"], body.Amount).Raw()
+		msg, err := messages.NewDelegate(body.FromAddress, vars["validatorAddress"], body.Amount).Raw()
 		if err != nil {
 			utils.WriteErrorToResponse(w, 400, &types.Error{
 				Message: "failed to prepare the transfer message",
@@ -58,7 +133,7 @@ func delegateHandler(cli *_cli.CLI) http.HandlerFunc {
 	}
 }
 
-func reDelegateHandler(cli *_cli.CLI) http.HandlerFunc {
+func reDelegationHandler(cli *_cli.CLI) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 
@@ -104,7 +179,7 @@ func reDelegateHandler(cli *_cli.CLI) http.HandlerFunc {
 	}
 }
 
-func unDelegateHandler(cli *_cli.CLI) http.HandlerFunc {
+func unDelegationHandler(cli *_cli.CLI) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 
@@ -125,7 +200,7 @@ func unDelegateHandler(cli *_cli.CLI) http.HandlerFunc {
 			return
 		}
 
-		msg, err := messages.NewUnDelegate(body.FromAddress, vars["valAddress"], body.Amount).Raw()
+		msg, err := messages.NewUnDelegate(body.FromAddress, vars["validatorAddress"], body.Amount).Raw()
 		if err != nil {
 			utils.WriteErrorToResponse(w, 400, &types.Error{
 				Message: "failed to prepare the transfer message",
@@ -147,77 +222,5 @@ func unDelegateHandler(cli *_cli.CLI) http.HandlerFunc {
 		}
 
 		utils.WriteResultToResponse(w, 200, res)
-	}
-}
-
-func getDelegatorDelegations(cli *_cli.CLI) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
-
-		address, err := sdk.AccAddressFromHex(vars["address"])
-		if err != nil {
-			utils.WriteErrorToResponse(w, 400, &types.Error{
-				Message: "failed to get address",
-				Info:    err.Error(),
-			})
-			return
-		}
-
-		delegations, _err := cli.GetDelegatorDelegations(address)
-		if _err != nil {
-			utils.WriteErrorToResponse(w, 400, _err)
-			return
-		}
-
-		utils.WriteResultToResponse(w, 200, delegations)
-	}
-}
-
-func getDelegatorValidators(cli *_cli.CLI) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
-
-		address, err := sdk.AccAddressFromHex(vars["address"])
-		if err != nil {
-			utils.WriteErrorToResponse(w, 400, &types.Error{
-				Message: "failed to get address",
-				Info:    err.Error(),
-			})
-			return
-		}
-
-		validators, _err := cli.GetDelegatorValidators(address)
-		if _err != nil {
-			utils.WriteErrorToResponse(w, 400, _err)
-			return
-		}
-
-		utils.WriteResultToResponse(w, 200, validators)
-	}
-}
-
-func getAllValidators(cli *_cli.CLI) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		validator, err := cli.GetAllValidators()
-		if err != nil {
-			utils.WriteErrorToResponse(w, 400, err)
-			return
-		}
-
-		utils.WriteResultToResponse(w, 200, validator)
-	}
-}
-
-func getValidator(cli *_cli.CLI) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
-
-		validator, err := cli.GetValidator(vars["address"])
-		if err != nil {
-			utils.WriteErrorToResponse(w, 400, err)
-			return
-		}
-
-		utils.WriteResultToResponse(w, 200, validator)
 	}
 }
