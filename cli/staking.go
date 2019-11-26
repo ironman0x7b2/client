@@ -12,7 +12,7 @@ import (
 	"github.com/ironman0x7b2/client/types"
 )
 
-func (cli *CLI, ) GetDelegatorDelegations(address sdk.AccAddress) (staking.Delegations, *types.Error) {
+func (cli *CLI) GetDelegatorDelegations(address sdk.AccAddress) (staking.Delegations, *types.Error) {
 	params := staking.NewQueryDelegatorParams(address)
 
 	bz, err := cli.Codec.MarshalJSON(params)
@@ -43,7 +43,7 @@ func (cli *CLI, ) GetDelegatorDelegations(address sdk.AccAddress) (staking.Deleg
 	return delegations, nil
 }
 
-func (cli *CLI, ) GetDelegatorValidators(address sdk.AccAddress) (staking.Validators, *types.Error) {
+func (cli *CLI) GetDelegatorValidators(address sdk.AccAddress) (staking.Validators, *types.Error) {
 	params := staking.NewQueryDelegatorParams(address)
 
 	bz, err := cli.Codec.MarshalJSON(params)
@@ -74,7 +74,7 @@ func (cli *CLI, ) GetDelegatorValidators(address sdk.AccAddress) (staking.Valida
 	return validators, nil
 }
 
-func (cli *CLI, ) GetAllValidators() (interface{}, *types.Error) {
+func (cli *CLI) GetAllValidators() (interface{}, *types.Error) {
 	if cli.ExplorerAddress == "" {
 		return nil, &types.Error{
 			Message: "no explorer address defined",
