@@ -25,9 +25,9 @@ func RegisterRoutes(r *mux.Router, cli *_cli.CLI) {
 		Methods("POST").Path("/delegations/{validatorAddress}").
 		HandlerFunc(delegationHandler(cli))
 	r.Name("ReDelegate").
-		Methods("PUT").Path("/re-delegation/{valSrcAddress}").
+		Methods("PUT").Path("/delegation/{valSrcAddress}").
 		HandlerFunc(reDelegationHandler(cli))
-	r.Name("UnDelegate").
-		Methods("DELETE").Path("/un-delegation/{validatorAddress}").
-		HandlerFunc(unDelegationHandler(cli))
+	r.Name("Unbond").
+		Methods("DELETE").Path("/delegation/{validatorAddress}").
+		HandlerFunc(unbondHandler(cli))
 }

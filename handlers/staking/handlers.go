@@ -164,7 +164,7 @@ func delegationHandler(cli *_cli.CLI) http.HandlerFunc {
 		msg, err := messages.NewDelegate(body.FromAddress, vars["validatorAddress"], body.Amount).Raw()
 		if err != nil {
 			utils.WriteErrorToResponse(w, 400, &types.Error{
-				Message: "failed to prepare the transfer message",
+				Message: "failed to prepare the unbond message",
 				Info:    err.Error(),
 			})
 			return
@@ -228,7 +228,7 @@ func reDelegationHandler(cli *_cli.CLI) http.HandlerFunc {
 		msg, err := messages.NewReDelegate(body.FromAddress, vars["valSrcAddress"], body.ValDestAddress, body.Amount).Raw()
 		if err != nil {
 			utils.WriteErrorToResponse(w, 400, &types.Error{
-				Message: "failed to prepare the transfer message",
+				Message: "failed to prepare the re-delegate message",
 				Info:    err.Error(),
 			})
 			return
@@ -251,9 +251,9 @@ func reDelegationHandler(cli *_cli.CLI) http.HandlerFunc {
 }
 
 /**
- * @api {delete} /un-delegation/{validatorAddress} undelegate Coins
- * @apiDescription undelegate Coins
- * @apiName ReDelegate
+ * @api {delete} /delegation/{validatorAddress} unbond Coins
+ * @apiDescription unbond Coins
+ * @apiName Unbond
  * @apiGroup staking
  * @apiParamExample {json} Request-Example:
  * {
@@ -267,11 +267,11 @@ func reDelegationHandler(cli *_cli.CLI) http.HandlerFunc {
  * @apiSuccess {object} result Success object.
  */
 
-func unDelegationHandler(cli *_cli.CLI) http.HandlerFunc {
+func unbondHandler(cli *_cli.CLI) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 
-		body, err := newUnDelegation(r)
+		body, err := newUnbond(r)
 		if err != nil {
 			utils.WriteErrorToResponse(w, 400, &types.Error{
 				Message: "failed to parse the request body",
@@ -288,10 +288,10 @@ func unDelegationHandler(cli *_cli.CLI) http.HandlerFunc {
 			return
 		}
 
-		msg, err := messages.NewUnDelegate(body.FromAddress, vars["validatorAddress"], body.Amount).Raw()
+		msg, err := messages.NewUnbond(body.FromAddress, vars["validatorAddress"], body.Amount).Raw()
 		if err != nil {
 			utils.WriteErrorToResponse(w, 400, &types.Error{
-				Message: "failed to prepare the transfer message",
+				Message: "failed to prepare the unbond message",
 				Info:    err.Error(),
 			})
 			return
