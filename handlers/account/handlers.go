@@ -14,9 +14,9 @@ import (
 )
 
 /**
- * @api {get} /accounts/{address} get Account
- * @apiDescription get Account
- * @apiName getAccount
+ * @api {get} /accounts/{address} get account
+ * @apiDescription Used to get account details
+ * @apiName GetAccount
  * @apiGroup account
  * @apiSuccess {Boolean} success Success key.
  * @apiSuccess {object} result Success object.
@@ -50,9 +50,9 @@ func getAccountHandler(cli *_cli.CLI) http.HandlerFunc {
 }
 
 /**
- * @api {post} /transfer transfer Coins
- * @apiDescription transfer Coins
- * @apiName transfer
+ * @api {post} /transfer transfer coins
+ * @apiDescription Used to transfer coins
+ * @apiName TransferCoins
  * @apiGroup account
  * @apiParamExample {json} Request-Example:
  * {

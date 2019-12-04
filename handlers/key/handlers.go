@@ -12,9 +12,9 @@ import (
 )
 
 /**
- * @api {get} /keys get Keys
- * @apiDescription get Keys
- * @apiName getKeys
+ * @api {get} /keys get keys
+ * @apiDescription Used to get keys details
+ * @apiName GetKeys
  * @apiGroup keys
  * @apiSuccess {Boolean} success Success key.
  * @apiSuccess {object} result Success object.
@@ -39,9 +39,9 @@ func getKeysHandler(cli *_cli.CLI) http.HandlerFunc {
 }
 
 /**
- * @api {post} /keys add Keys
- * @apiDescription add Keys
- * @apiName addKeys
+ * @api {post} /keys add keys
+ * @apiDescription Used to create keys
+ * @apiName AddKeys
  * @apiGroup keys
  * @apiParamExample {json} Request-Example:
  * {
@@ -115,9 +115,9 @@ func addKeyHandler(cli *_cli.CLI) http.HandlerFunc {
 }
 
 /**
- * @api {delete} /keys delete Keys
- * @apiDescription delete Keys
- * @apiName deleteKeys
+ * @api {delete} /keys delete keys
+ * @apiDescription Used to delete keys
+ * @apiName DeleteKeys
  * @apiGroup keys
  * @apiParamExample {json} Request-Example:
  * {
