@@ -13,6 +13,15 @@ import (
 	"github.com/ironman0x7b2/client/utils"
 )
 
+/**
+ * @api {get} /accounts/{address} get Account
+ * @apiDescription get Account
+ * @apiName getAccount
+ * @apiGroup account
+ * @apiSuccess {Boolean} success Success key.
+ * @apiSuccess {object} result Success object.
+ */
+
 func getAccountHandler(cli *_cli.CLI) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
@@ -39,6 +48,24 @@ func getAccountHandler(cli *_cli.CLI) http.HandlerFunc {
 		utils.WriteResultToResponse(w, 200, _account)
 	}
 }
+
+/**
+ * @api {post} /transfer transfer Coins
+ * @apiDescription transfer Coins
+ * @apiName transfer
+ * @apiGroup account
+ * @apiParamExample {json} Request-Example:
+ * {
+ *	"from":"name",
+ *	"from_address":"4CC1DA947C678D6DD1E375D9AF1674C2B633D25B",
+ *	"to_address":"35BC67ABA8E19D9462F2C9CEA15AC8643E77166F",
+ *	"amount":[{"denom":"tsent","value":10}],
+ *	"password":"password",
+ *	"gas":210000
+ * }
+ * @apiSuccess {Boolean} success Success key.
+ * @apiSuccess {object} result Success object.
+ */
 
 func transferCoinsHandler(cli *_cli.CLI) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {

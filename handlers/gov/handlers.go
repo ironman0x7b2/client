@@ -14,6 +14,15 @@ import (
 	"github.com/ironman0x7b2/client/utils"
 )
 
+/**
+ * @api {get} /proposals get All Proposals
+ * @apiDescription get All Proposals
+ * @apiName getAllProposals
+ * @apiGroup gov
+ * @apiSuccess {Boolean} success Success key.
+ * @apiSuccess {object} result Success object.
+ */
+
 func getAllProposalsHandler(cli *_cli.CLI) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var limit uint64
@@ -36,6 +45,15 @@ func getAllProposalsHandler(cli *_cli.CLI) http.HandlerFunc {
 		utils.WriteResultToResponse(w, 200, proposals)
 	}
 }
+
+/**
+ * @api {get} /proposals/{id} get Proposal
+ * @apiDescription get Proposal
+ * @apiName getProposal
+ * @apiGroup gov
+ * @apiSuccess {Boolean} success Success key.
+ * @apiSuccess {object} result Success object.
+ */
 
 func getProposalHandler(cli *_cli.CLI) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -62,6 +80,15 @@ func getProposalHandler(cli *_cli.CLI) http.HandlerFunc {
 	}
 }
 
+/**
+ * @api {get} /proposals/{id}/votes get Proposal Votes
+ * @apiDescription get Proposal Votes
+ * @apiName getProposalVotes
+ * @apiGroup gov
+ * @apiSuccess {Boolean} success Success key.
+ * @apiSuccess {object} result Success object.
+ */
+
 func getProposalVotesHandler(cli *_cli.CLI) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
@@ -87,6 +114,15 @@ func getProposalVotesHandler(cli *_cli.CLI) http.HandlerFunc {
 		utils.WriteResultToResponse(w, 200, _votes)
 	}
 }
+
+/**
+ * @api {get} //proposals/{id}/voters/{address} get Proposal Voter
+ * @apiDescription get Proposal Voter
+ * @apiName getProposalVoter
+ * @apiGroup gov
+ * @apiSuccess {Boolean} success Success key.
+ * @apiSuccess {object} result Success object.
+ */
 
 func getProposalVoteHandler(cli *_cli.CLI) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -125,6 +161,26 @@ func getProposalVoteHandler(cli *_cli.CLI) http.HandlerFunc {
 		utils.WriteResultToResponse(w, 200, _vote)
 	}
 }
+
+/**
+ * @api {post} /proposals submit Proposal
+ * @apiDescription submit Proposal
+ * @apiName submitProposal
+ * @apiGroup gov
+ * @apiParamExample {json} Request-Example:
+ * {
+ *	"from":"Name",
+ *	"from_address":"4CC1DA947C678D6DD1E375D9AF1674C2B633D25B",
+ *  "title":"Title",
+ *  "description":"Description",
+ *  "type":"Text",
+ *	"amount":[{"denom":"tsent","value":10}],
+ *	"gas":210000,
+ *	"password":"password"
+ * }
+ * @apiSuccess {Boolean} success Success key.
+ * @apiSuccess {object} result Success object.
+ */
 
 func submitProposalHandler(cli *_cli.CLI) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -169,6 +225,23 @@ func submitProposalHandler(cli *_cli.CLI) http.HandlerFunc {
 		utils.WriteResultToResponse(w, 200, res)
 	}
 }
+
+/**
+ * @api {post} /proposals/{id}/deposits Proposal Deposits
+ * @apiDescription Proposal Deposits
+ * @apiName proposalDeposits
+ * @apiGroup gov
+ * @apiParamExample {json} Request-Example:
+ * {
+ *	"from":"Name",
+ *	"from_address":"4CC1DA947C678D6DD1E375D9AF1674C2B633D25B",
+ *	"amount":[{"denom":"tsent","value":10}],
+ *	"gas":210000,
+ *	"password":"password"
+ * }
+ * @apiSuccess {Boolean} success Success key.
+ * @apiSuccess {object} result Success object.
+ */
 
 func proposalDepositsHandler(cli *_cli.CLI) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -224,6 +297,23 @@ func proposalDepositsHandler(cli *_cli.CLI) http.HandlerFunc {
 		utils.WriteResultToResponse(w, 200, res)
 	}
 }
+
+/**
+ * @api {post} /proposals/{id}/votes Proposal Votes
+ * @apiDescription Proposal Votes
+ * @apiName proposalVotes
+ * @apiGroup gov
+ * @apiParamExample {json} Request-Example:
+ * {
+ *	"from":"Name",
+ *	"from_address":"4CC1DA947C678D6DD1E375D9AF1674C2B633D25B",
+ *  "option":"yes",
+ *	"gas":210000,
+ *	"password":"password"
+ * }
+ * @apiSuccess {Boolean} success Success key.
+ * @apiSuccess {object} result Success object.
+ */
 
 func proposalVotesHandler(cli *_cli.CLI) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {

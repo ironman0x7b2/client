@@ -7,11 +7,40 @@ import (
 	"github.com/ironman0x7b2/client/utils"
 )
 
+/**
+ * @api {get} /config get Config
+ * @apiDescription get Config
+ * @apiName getConfig
+ * @apiGroup config
+ * @apiSuccess {Boolean} success Success key.
+ * @apiSuccess {object} result Success object.
+ */
+
 func getConfigHandler(config *types.Config) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		utils.WriteResultToResponse(w, 200, config)
 	}
 }
+
+/**
+ * @api {put} /config update Config
+ * @apiDescription update Config
+ * @apiName updateConfig
+ * @apiGroup config
+ * @apiParamExample {json} Request-Example:
+ * {
+ *	"chain_id":"sentinel-turing-2",
+ *	"rpc_address":"ip:port",
+ *  "explorer_address":"ip:port",
+ *  "verifier_dir": "/home/user/.sentinel/client",
+ * "keys_dir": "/home/user/.sentinel/client",
+ * "resolver_address": "ip:port",
+ * "trust_node": false,
+ * "kill_switch": false
+ * }
+ * @apiSuccess {Boolean} success Success key.
+ * @apiSuccess {object} result Success object.
+ */
 
 func updateConfigHandler(config *types.Config) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {

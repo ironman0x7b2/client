@@ -13,6 +13,15 @@ import (
 	"github.com/ironman0x7b2/client/utils"
 )
 
+/**
+ * @api {get} /accounts/{address}/delegations get Delegator Delegations
+ * @apiDescription get Delegator Delegations
+ * @apiName getDelegatorDelegations
+ * @apiGroup staking
+ * @apiSuccess {Boolean} success Success key.
+ * @apiSuccess {object} result Success object.
+ */
+
 func getDelegatorDelegationsHandler(cli *_cli.CLI) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
@@ -36,6 +45,15 @@ func getDelegatorDelegationsHandler(cli *_cli.CLI) http.HandlerFunc {
 		utils.WriteResultToResponse(w, 200, _delegations)
 	}
 }
+
+/**
+ * @api {get} /accounts/{address}/delegations/validators get Delegator Validators
+ * @apiDescription get Delegator Validators
+ * @apiName GetDelegatorValidators
+ * @apiGroup staking
+ * @apiSuccess {Boolean} success Success key.
+ * @apiSuccess {object} result Success object.
+ */
 
 func getDelegatorValidatorsHandler(cli *_cli.CLI) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -61,6 +79,15 @@ func getDelegatorValidatorsHandler(cli *_cli.CLI) http.HandlerFunc {
 	}
 }
 
+/**
+ * @api {get} /validators get All Validators
+ * @apiDescription get All Validators
+ * @apiName GetAllValidators
+ * @apiGroup staking
+ * @apiSuccess {Boolean} success Success key.
+ * @apiSuccess {object} result Success object.
+ */
+
 func getAllValidatorsHandler(cli *_cli.CLI) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		validator, err := cli.GetAllValidators()
@@ -72,6 +99,15 @@ func getAllValidatorsHandler(cli *_cli.CLI) http.HandlerFunc {
 		utils.WriteResultToResponse(w, 200, validator)
 	}
 }
+
+/**
+ * @api {get} /validators/{address} get Validators
+ * @apiDescription get Validators
+ * @apiName GetValidators
+ * @apiGroup staking
+ * @apiSuccess {Boolean} success Success key.
+ * @apiSuccess {object} result Success object.
+ */
 
 func getValidatorHandler(cli *_cli.CLI) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -86,6 +122,23 @@ func getValidatorHandler(cli *_cli.CLI) http.HandlerFunc {
 		utils.WriteResultToResponse(w, 200, validator)
 	}
 }
+
+/**
+ * @api {post} delegations/{validatorAddress} delegate Coins
+ * @apiDescription delegate Coins
+ * @apiName Delegate
+ * @apiGroup staking
+ * @apiParamExample {json} Request-Example:
+ * {
+ *	"from":"Name",
+ *	"from_address":"4CC1DA947C678D6DD1E375D9AF1674C2B633D25B",
+ *	"amount":[{"denom":"tsent","value":10}],
+ *	"gas":210000,
+ *	"password":"password"
+ * }
+ * @apiSuccess {Boolean} success Success key.
+ * @apiSuccess {object} result Success object.
+ */
 
 func delegationHandler(cli *_cli.CLI) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -133,6 +186,24 @@ func delegationHandler(cli *_cli.CLI) http.HandlerFunc {
 	}
 }
 
+/**
+ * @api {put} /re-delegation/{valSrcAddress} redelegate Coins
+ * @apiDescription redelegate Coins
+ * @apiName ReDelegate
+ * @apiGroup staking
+ * @apiParamExample {json} Request-Example:
+ * {
+ *	"from":"Name",
+ *	"from_address":"4CC1DA947C678D6DD1E375D9AF1674C2B633D25B",
+ *  "val_dest_address":"4CC1DA947C678D6DD1E375D9AF1674C2B633D25B",
+ *	"amount":[{"denom":"tsent","value":10}],
+ *	"gas":210000,
+ *	"password":"password"
+ * }
+ * @apiSuccess {Boolean} success Success key.
+ * @apiSuccess {object} result Success object.
+ */
+
 func reDelegationHandler(cli *_cli.CLI) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
@@ -178,6 +249,23 @@ func reDelegationHandler(cli *_cli.CLI) http.HandlerFunc {
 		utils.WriteResultToResponse(w, 200, res)
 	}
 }
+
+/**
+ * @api {delete} /un-delegation/{validatorAddress} undelegate Coins
+ * @apiDescription undelegate Coins
+ * @apiName ReDelegate
+ * @apiGroup staking
+ * @apiParamExample {json} Request-Example:
+ * {
+ *	"from":"Name",
+ *	"from_address":"4CC1DA947C678D6DD1E375D9AF1674C2B633D25B",
+ *	"amount":[{"denom":"tsent","value":10}],
+ *	"gas":210000,
+ *	"password":"password"
+ * }
+ * @apiSuccess {Boolean} success Success key.
+ * @apiSuccess {object} result Success object.
+ */
 
 func unDelegationHandler(cli *_cli.CLI) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
