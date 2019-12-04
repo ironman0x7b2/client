@@ -12,6 +12,22 @@ import (
 	"github.com/ironman0x7b2/client/utils"
 )
 
+/**
+ * @api {post} /accounts/{validatorAddress}/rewards get Rewards
+ * @apiDescription get Rewards
+ * @apiName getRewards
+ * @apiGroup distribution
+ * @apiParamExample {json} Request-Example:
+ * {
+ *	"from":"Name",
+ *	"from_address":"4CC1DA947C678D6DD1E375D9AF1674C2B633D25B",
+ *	"gas":210000,
+ *	"password":"password"
+ * }
+ * @apiSuccess {Boolean} success Success key.
+ * @apiSuccess {object} result Success object.
+ */
+
 func rewardsHandler(cli *_cli.CLI) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)

@@ -11,6 +11,15 @@ import (
 	"github.com/ironman0x7b2/client/utils"
 )
 
+/**
+ * @api {get} /keys get Keys
+ * @apiDescription get Keys
+ * @apiName getKeys
+ * @apiGroup keys
+ * @apiSuccess {Boolean} success Success key.
+ * @apiSuccess {object} result Success object.
+ */
+
 func getKeysHandler(cli *_cli.CLI) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		infos, err := cli.Keybase.List()
@@ -28,6 +37,20 @@ func getKeysHandler(cli *_cli.CLI) http.HandlerFunc {
 		utils.WriteResultToResponse(w, 200, _keys)
 	}
 }
+
+/**
+ * @api {post} /keys add Keys
+ * @apiDescription add Keys
+ * @apiName addKeys
+ * @apiGroup keys
+ * @apiParamExample {json} Request-Example:
+ * {
+ *	"name":"Name",
+ *	"password":"password"
+ * }
+ * @apiSuccess {Boolean} success Success key.
+ * @apiSuccess {object} result Success object.
+ */
 
 func addKeyHandler(cli *_cli.CLI) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -90,6 +113,20 @@ func addKeyHandler(cli *_cli.CLI) http.HandlerFunc {
 		utils.WriteResultToResponse(w, 201, key)
 	}
 }
+
+/**
+ * @api {delete} /keys delete Keys
+ * @apiDescription delete Keys
+ * @apiName deleteKeys
+ * @apiGroup keys
+ * @apiParamExample {json} Request-Example:
+ * {
+ *	"name":"Name",
+ *	"password":"password"
+ * }
+ * @apiSuccess {Boolean} success Success key.
+ * @apiSuccess {object} result Success object.
+ */
 
 func deleteKeyHandler(cli *_cli.CLI) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
