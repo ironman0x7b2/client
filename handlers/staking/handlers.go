@@ -14,9 +14,9 @@ import (
 )
 
 /**
- * @api {get} /accounts/{address}/delegations get Delegator Delegations
- * @apiDescription get Delegator Delegations
- * @apiName getDelegatorDelegations
+ * @api {get} /accounts/{address}/delegations get delegator delegations
+ * @apiDescription Used to get all delegations of delegator
+ * @apiName GetDelegatorDelegations
  * @apiGroup staking
  * @apiSuccess {Boolean} success Success key.
  * @apiSuccess {object} result Success object.
@@ -47,8 +47,8 @@ func getDelegatorDelegationsHandler(cli *_cli.CLI) http.HandlerFunc {
 }
 
 /**
- * @api {get} /accounts/{address}/delegations/validators get Delegator Validators
- * @apiDescription get Delegator Validators
+ * @api {get} /accounts/{address}/delegations/validators get delegator validators
+ * @apiDescription Used to get all validators of delegator
  * @apiName GetDelegatorValidators
  * @apiGroup staking
  * @apiSuccess {Boolean} success Success key.
@@ -80,8 +80,8 @@ func getDelegatorValidatorsHandler(cli *_cli.CLI) http.HandlerFunc {
 }
 
 /**
- * @api {get} /validators get All Validators
- * @apiDescription get All Validators
+ * @api {get} /validators get all validators
+ * @apiDescription Used to get all validators
  * @apiName GetAllValidators
  * @apiGroup staking
  * @apiSuccess {Boolean} success Success key.
@@ -101,9 +101,9 @@ func getAllValidatorsHandler(cli *_cli.CLI) http.HandlerFunc {
 }
 
 /**
- * @api {get} /validators/{address} get Validators
- * @apiDescription get Validators
- * @apiName GetValidators
+ * @api {get} /validators/{address} get validator
+ * @apiDescription Used to get validator details
+ * @apiName GetValidator
  * @apiGroup staking
  * @apiSuccess {Boolean} success Success key.
  * @apiSuccess {object} result Success object.
@@ -124,8 +124,8 @@ func getValidatorHandler(cli *_cli.CLI) http.HandlerFunc {
 }
 
 /**
- * @api {post} delegations/{validatorAddress} delegate Coins
- * @apiDescription delegate Coins
+ * @api {post} delegations/{validatorAddress} delegate coins
+ * @apiDescription Used to delegate coins to validator
  * @apiName Delegate
  * @apiGroup staking
  * @apiParamExample {json} Request-Example:
@@ -187,8 +187,8 @@ func delegationHandler(cli *_cli.CLI) http.HandlerFunc {
 }
 
 /**
- * @api {put} /re-delegation/{valSrcAddress} redelegate Coins
- * @apiDescription redelegate Coins
+ * @api {put} /re-delegation/{valSrcAddress} redelegate coins
+ * @apiDescription Used to redelegate coins from one validator to other validator
  * @apiName ReDelegate
  * @apiGroup staking
  * @apiParamExample {json} Request-Example:
@@ -251,8 +251,8 @@ func reDelegationHandler(cli *_cli.CLI) http.HandlerFunc {
 }
 
 /**
- * @api {delete} /delegation/{validatorAddress} unbond Coins
- * @apiDescription unbond Coins
+ * @api {delete} /delegation/{validatorAddress} unbond coins
+ * @apiDescription Used to unbond(undelegate) coins from validator
  * @apiName Unbond
  * @apiGroup staking
  * @apiParamExample {json} Request-Example:

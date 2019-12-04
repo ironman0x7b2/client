@@ -8,9 +8,9 @@ import (
 )
 
 /**
- * @api {get} /config get Config
- * @apiDescription get Config
- * @apiName getConfig
+ * @api {get} /config get config
+ * @apiDescription Used to get config details
+ * @apiName GetConfig
  * @apiGroup config
  * @apiSuccess {Boolean} success Success key.
  * @apiSuccess {object} result Success object.
@@ -23,9 +23,9 @@ func getConfigHandler(config *types.Config) http.HandlerFunc {
 }
 
 /**
- * @api {put} /config update Config
- * @apiDescription update Config
- * @apiName updateConfig
+ * @api {put} /config update config
+ * @apiDescription Used to update config details
+ * @apiName UpdateConfig
  * @apiGroup config
  * @apiParamExample {json} Request-Example:
  * {

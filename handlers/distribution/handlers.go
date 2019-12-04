@@ -13,9 +13,9 @@ import (
 )
 
 /**
- * @api {post} /accounts/{validatorAddress}/rewards get Rewards
- * @apiDescription get Rewards
- * @apiName getRewards
+ * @api {post} /accounts/{validatorAddress}/rewards withdraw rewards
+ * @apiDescription Used to withdraw delegation Rewards
+ * @apiName Withdraw-rewards
  * @apiGroup distribution
  * @apiParamExample {json} Request-Example:
  * {

@@ -15,9 +15,9 @@ import (
 )
 
 /**
- * @api {get} /proposals get All Proposals
- * @apiDescription get All Proposals
- * @apiName getAllProposals
+ * @api {get} /proposals get all proposals
+ * @apiDescription Used to get all proposals
+ * @apiName GetAllProposals
  * @apiGroup gov
  * @apiSuccess {Boolean} success Success key.
  * @apiSuccess {object} result Success object.
@@ -47,9 +47,9 @@ func getAllProposalsHandler(cli *_cli.CLI) http.HandlerFunc {
 }
 
 /**
- * @api {get} /proposals/{id} get Proposal
- * @apiDescription get Proposal
- * @apiName getProposal
+ * @api {get} /proposals/{id} get proposal
+ * @apiDescription Used to get Proposal
+ * @apiName GetProposal
  * @apiGroup gov
  * @apiSuccess {Boolean} success Success key.
  * @apiSuccess {object} result Success object.
@@ -81,9 +81,9 @@ func getProposalHandler(cli *_cli.CLI) http.HandlerFunc {
 }
 
 /**
- * @api {get} /proposals/{id}/votes get Proposal Votes
- * @apiDescription get Proposal Votes
- * @apiName getProposalVotes
+ * @api {get} /proposals/{id}/votes get proposal votes
+ * @apiDescription Used to get proposal votes
+ * @apiName GetProposalVotes
  * @apiGroup gov
  * @apiSuccess {Boolean} success Success key.
  * @apiSuccess {object} result Success object.
@@ -116,9 +116,9 @@ func getProposalVotesHandler(cli *_cli.CLI) http.HandlerFunc {
 }
 
 /**
- * @api {get} //proposals/{id}/voters/{address} get Proposal Voter
- * @apiDescription get Proposal Voter
- * @apiName getProposalVoter
+ * @api {get} //proposals/{id}/voters/{address} get proposal voter
+ * @apiDescription Used to get proposal voter
+ * @apiName GetProposalVoter
  * @apiGroup gov
  * @apiSuccess {Boolean} success Success key.
  * @apiSuccess {object} result Success object.
@@ -163,9 +163,9 @@ func getProposalVoteHandler(cli *_cli.CLI) http.HandlerFunc {
 }
 
 /**
- * @api {post} /proposals submit Proposal
- * @apiDescription submit Proposal
- * @apiName submitProposal
+ * @api {post} /proposals submit proposal
+ * @apiDescription Used to submit proposal
+ * @apiName SubmitProposal
  * @apiGroup gov
  * @apiParamExample {json} Request-Example:
  * {
@@ -227,9 +227,9 @@ func submitProposalHandler(cli *_cli.CLI) http.HandlerFunc {
 }
 
 /**
- * @api {post} /proposals/{id}/deposits Proposal Deposits
- * @apiDescription Proposal Deposits
- * @apiName proposalDeposits
+ * @api {post} /proposals/{id}/deposits proposal deposits
+ * @apiDescription Used to deposit amount for proposal
+ * @apiName ProposalDeposits
  * @apiGroup gov
  * @apiParamExample {json} Request-Example:
  * {
@@ -299,9 +299,9 @@ func proposalDepositsHandler(cli *_cli.CLI) http.HandlerFunc {
 }
 
 /**
- * @api {post} /proposals/{id}/votes Proposal Votes
- * @apiDescription Proposal Votes
- * @apiName proposalVotes
+ * @api {post} /proposals/{id}/votes proposal votes
+ * @apiDescription Used to submit the vote for proposal
+ * @apiName ProposalVotes
  * @apiGroup gov
  * @apiParamExample {json} Request-Example:
  * {
