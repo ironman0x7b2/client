@@ -92,29 +92,29 @@ func (d *ReDelegate) Raw() (reDelegate staking.MsgBeginRedelegate, err error) {
 	return reDelegate, nil
 }
 
-type UnDelegate struct {
+type Unbond struct {
 	FromAddress string     `json:"from_address"`
 	ValAddress  string     `json:"val_address"`
 	Amount      types.Coin `json:"amount"`
 }
 
-func NewUnDelegate(fromAddress, valAddress string, amount types.Coin) *UnDelegate {
-	return &UnDelegate{
+func NewUnbond(fromAddress, valAddress string, amount types.Coin) *Unbond {
+	return &Unbond{
 		FromAddress: fromAddress,
 		ValAddress:  valAddress,
 		Amount:      amount,
 	}
 }
 
-func NewUnDelegateFromRaw(m *staking.MsgUndelegate) *UnDelegate {
-	return &UnDelegate{
+func NewUnbondFromRaw(m *staking.MsgUndelegate) *Unbond {
+	return &Unbond{
 		FromAddress: common.HexBytes(m.DelegatorAddress.Bytes()).String(),
 		ValAddress:  common.HexBytes(m.ValidatorAddress).String(),
 		Amount:      types.NewCoinFromRaw(m.Amount),
 	}
 }
 
-func (d *UnDelegate) Raw() (undelegate staking.MsgUndelegate, err error) {
+func (d *Unbond) Raw() (undelegate staking.MsgUndelegate, err error) {
 	undelegate.DelegatorAddress, err = sdk.AccAddressFromHex(d.FromAddress)
 	if err != nil {
 		return undelegate, err

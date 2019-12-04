@@ -92,7 +92,7 @@ func (r *reDelegation) Validate() error {
 	return nil
 }
 
-type unDelegation struct {
+type unbond struct {
 	From        string     `json:"from"`
 	FromAddress string     `json:"from_address"`
 	Amount      types.Coin `json:"amount"`
@@ -106,8 +106,8 @@ type unDelegation struct {
 	Password string `json:"password"`
 }
 
-func newUnDelegation(r *http.Request) (*unDelegation, error) {
-	var body unDelegation
+func newUnbond(r *http.Request) (*unbond, error) {
+	var body unbond
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 		return nil, err
 	}
@@ -115,7 +115,7 @@ func newUnDelegation(r *http.Request) (*unDelegation, error) {
 	return &body, nil
 }
 
-func (r *unDelegation) Validate() error {
+func (r *unbond) Validate() error {
 	if r.From == "" {
 		return fmt.Errorf("invalid field from")
 	}

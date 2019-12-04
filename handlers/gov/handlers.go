@@ -204,7 +204,7 @@ func submitProposalHandler(cli *_cli.CLI) http.HandlerFunc {
 		msg, err := messages.NewProposal(body.FromAddress, body.Title, body.Description, body.Type, body.Amount).Raw()
 		if err != nil {
 			utils.WriteErrorToResponse(w, 400, &types.Error{
-				Message: "failed to prepare the transfer message",
+				Message: "failed to prepare the proposal message",
 				Info:    err.Error(),
 			})
 			return
@@ -276,7 +276,7 @@ func proposalDepositsHandler(cli *_cli.CLI) http.HandlerFunc {
 		msg, err := messages.NewProposalDeposits(body.FromAddress, id, body.Amount).Raw()
 		if err != nil {
 			utils.WriteErrorToResponse(w, 400, &types.Error{
-				Message: "failed to prepare the transfer message",
+				Message: "failed to prepare the proposal deposits message",
 				Info:    err.Error(),
 			})
 			return
@@ -348,7 +348,7 @@ func proposalVotesHandler(cli *_cli.CLI) http.HandlerFunc {
 		msg, err := messages.NewProposalVotes(body.FromAddress, id, body.Option).Raw()
 		if err != nil {
 			utils.WriteErrorToResponse(w, 400, &types.Error{
-				Message: "failed to prepare the transfer message",
+				Message: "failed to prepare the proposal votes message",
 				Info:    err.Error(),
 			})
 			return
