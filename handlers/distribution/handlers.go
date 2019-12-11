@@ -13,9 +13,9 @@ import (
 )
 
 /**
- * @api {post} /accounts/withdraw-rewards/{validatorAddress} withdraw rewards
- * @apiDescription Used to withdraw delegation Rewards from single validator
- * @apiName Withdraw-rewards
+ * @api {post} /accounts/withdraw-withdrawRewards/{validatorAddress} withdraw withdrawRewards
+ * @apiDescription Used to withdraw delegation WithdrawRewards from single validator
+ * @apiName Withdraw-withdrawRewards
  * @apiGroup distribution
  * @apiParamExample {json} Request-Example:
  * {
@@ -28,7 +28,7 @@ import (
  * @apiSuccess {object} result Success object.
  */
 
-func rewardsHandler(cli *_cli.CLI) http.HandlerFunc {
+func withdrawRewardsHandler(cli *_cli.CLI) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 
@@ -49,10 +49,10 @@ func rewardsHandler(cli *_cli.CLI) http.HandlerFunc {
 			return
 		}
 
-		msg, err := messages.NewRewards(body.FromAddress, vars["validatorAddress"]).Raw()
+		msg, err := messages.NewWithdrawRewards(body.FromAddress, vars["validatorAddress"]).Raw()
 		if err != nil {
 			utils.WriteErrorToResponse(w, 400, &types.Error{
-				Message: "failed to prepare the rewards message",
+				Message: "failed to prepare the withdrawRewards message",
 				Info:    err.Error(),
 			})
 			return
@@ -75,9 +75,9 @@ func rewardsHandler(cli *_cli.CLI) http.HandlerFunc {
 }
 
 /**
- * @api {post} /accounts/withdraw-all-rewards withdraw all rewards
- * @apiDescription Used to withdraw delegation Rewards form all validators
- * @apiName Withdraw-all-rewards
+ * @api {post} /accounts/withdraw-all-withdrawRewards withdraw all withdrawRewards
+ * @apiDescription Used to withdraw delegation WithdrawRewards form all validators
+ * @apiName Withdraw-all-withdrawRewards
  * @apiGroup distribution
  * @apiParamExample {json} Request-Example:
  * {
@@ -90,9 +90,9 @@ func rewardsHandler(cli *_cli.CLI) http.HandlerFunc {
  * @apiSuccess {object} result Success object.
  */
 
-func allRewardsHandler(cli *_cli.CLI) http.HandlerFunc {
+func withdrawAllRewardsHandler(cli *_cli.CLI) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		body, err := newAllRewards(r)
+		body, err := newRewards(r)
 		if err != nil {
 			utils.WriteErrorToResponse(w, 400, &types.Error{
 				Message: "failed to parse the request body",
@@ -126,10 +126,10 @@ func allRewardsHandler(cli *_cli.CLI) http.HandlerFunc {
 
 		var msgs []sdk.Msg
 		for _, validator := range validators {
-			msg, err := messages.NewRewards(body.FromAddress, validator.OperatorAddress.String()).Raw()
+			msg, err := messages.NewWithdrawRewards(body.FromAddress, validator.OperatorAddress.String()).Raw()
 			if err != nil {
 				utils.WriteErrorToResponse(w, 400, &types.Error{
-					Message: "failed to prepare the rewards message",
+					Message: "failed to prepare the withdrawRewards message",
 					Info:    err.Error(),
 				})
 				return
