@@ -7,10 +7,10 @@ import (
 )
 
 func RegisterRoutes(r *mux.Router, cli *_cli.CLI) {
-	r.Name("Withdraw-all-rewards").
-		Methods("POST").Path("/accounts/withdraw-all-rewards").
-		HandlerFunc(allRewardsHandler(cli))
-	r.Name("Withdraw-rewards").
-		Methods("POST").Path("/accounts/withdraw-rewards/{validatorAddress}").
-		HandlerFunc(rewardsHandler(cli))
+	r.Name("Withdraw-all-withdrawRewards").
+		Methods("POST").Path("/accounts/withdraw-all-withdrawRewards").
+		HandlerFunc(withdrawAllRewardsHandler(cli))
+	r.Name("Withdraw-withdrawRewards").
+		Methods("POST").Path("/accounts/withdraw-withdrawRewards/{validatorAddress}").
+		HandlerFunc(withdrawRewardsHandler(cli))
 }

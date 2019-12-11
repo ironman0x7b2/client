@@ -6,26 +6,26 @@ import (
 	"github.com/tendermint/tendermint/libs/common"
 )
 
-type Rewards struct {
+type WithdrawRewards struct {
 	FromAddress string `json:"from_address"`
 	ValAddress  string `json:"val_address"`
 }
 
-func NewRewards(fromAddress, valAddress string) *Rewards {
-	return &Rewards{
+func NewWithdrawRewards(fromAddress, valAddress string) *WithdrawRewards {
+	return &WithdrawRewards{
 		FromAddress: fromAddress,
 		ValAddress:  valAddress,
 	}
 }
 
-func NewRewardsFromRaw(m *distribution.MsgWithdrawDelegatorReward) *Rewards {
-	return &Rewards{
+func NewWithdrawRewardsFromRaw(m *distribution.MsgWithdrawDelegatorReward) *WithdrawRewards {
+	return &WithdrawRewards{
 		FromAddress: common.HexBytes(m.DelegatorAddress.Bytes()).String(),
 		ValAddress:  common.HexBytes(m.ValidatorAddress).String(),
 	}
 }
 
-func (d *Rewards) Raw() (rewards distribution.MsgWithdrawDelegatorReward, err error) {
+func (d *WithdrawRewards) Raw() (rewards distribution.MsgWithdrawDelegatorReward, err error) {
 	rewards.DelegatorAddress, err = sdk.AccAddressFromHex(d.FromAddress)
 	if err != nil {
 		return rewards, err
