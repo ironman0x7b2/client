@@ -15,10 +15,14 @@ type Account struct {
 	Number   uint64      `json:"number"`
 }
 
-func NewAccountFromRaw(a auth.Account) Account {
+func NewAccountFromRaw(a auth.Account) (account Account) {
+	if a.GetPubKey() == nil {
+		account.PubKey = ""
+	} else {
+		account.PubKey = common.HexBytes(a.GetPubKey().Bytes()).String()
+	}
 	return Account{
 		Address:  common.HexBytes(a.GetAddress().Bytes()).String(),
-		PubKey:   common.HexBytes(a.GetPubKey().Bytes()).String(),
 		Coins:    types.NewCoinsFromRaw(a.GetCoins()),
 		Sequence: a.GetSequence(),
 		Number:   a.GetAccountNumber(),
