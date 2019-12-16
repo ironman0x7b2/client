@@ -25,7 +25,7 @@ func NewCLI(cdc *codec.Codec, kb keys.Keybase) *CLI {
 			Keybase:       kb,
 			Output:        os.Stdout,
 			OutputFormat:  "text",
-			BroadcastMode: "sync",
+			BroadcastMode: "block",
 			SkipConfirm:   true,
 		},
 	}
