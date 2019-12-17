@@ -5,6 +5,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/gorilla/mux"
+	"github.com/tendermint/tendermint/libs/common"
 
 	_cli "github.com/ironman0x7b2/client/cli"
 	"github.com/ironman0x7b2/client/messages"
@@ -126,7 +127,7 @@ func withdrawAllRewardsHandler(cli *_cli.CLI) http.HandlerFunc {
 
 		var msgs []sdk.Msg
 		for _, validator := range validators {
-			msg, err := messages.NewWithdrawRewards(body.FromAddress, validator.OperatorAddress.String()).Raw()
+			msg, err := messages.NewWithdrawRewards(body.FromAddress, common.HexBytes(validator.OperatorAddress.Bytes()).String()).Raw()
 			if err != nil {
 				utils.WriteErrorToResponse(w, 400, &types.Error{
 					Message: "failed to prepare the withdrawRewards message",
