@@ -16,6 +16,7 @@ import (
 	"github.com/ironman0x7b2/client/handlers/account"
 	"github.com/ironman0x7b2/client/handlers/config"
 	"github.com/ironman0x7b2/client/handlers/distribution"
+	"github.com/ironman0x7b2/client/handlers/gov"
 	"github.com/ironman0x7b2/client/handlers/key"
 	"github.com/ironman0x7b2/client/handlers/staking"
 	"github.com/ironman0x7b2/client/handlers/tx"
@@ -73,6 +74,7 @@ func main() {
 	key.RegisterRoutes(router, cli)
 	account.RegisterRoutes(router, cli)
 	staking.RegisterRoutes(router, cli)
+	gov.RegisterRoutes(router, cli)
 	distribution.RegisterRoutes(router, cli)
 	tx.RegisterRoutes(router, cli)
 
