@@ -132,7 +132,7 @@ func getValidatorHandler(cli *_cli.CLI) http.HandlerFunc {
  * {
  *	"from":"Name",
  *	"from_address":"4CC1DA947C678D6DD1E375D9AF1674C2B633D25B",
- *	"amount":[{"denom":"tsent","value":10}],
+ *	"amount":{"denom":"tsent","value":10},
  *	"gas":210000,
  *	"password":"password"
  * }
