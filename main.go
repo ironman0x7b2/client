@@ -8,6 +8,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/keys"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/gorilla/mux"
+	"github.com/rs/cors"
 	"github.com/sentinel-official/hub/app"
 	hub "github.com/sentinel-official/hub/types"
 	tm "github.com/tendermint/tendermint/types"
@@ -78,5 +79,7 @@ func main() {
 	distribution.RegisterRoutes(router, cli)
 	tx.RegisterRoutes(router, cli)
 
-	panic(http.ListenAndServe(address, router))
+	handler := cors.Default().Handler(router)
+
+	panic(http.ListenAndServe(address, handler))
 }
