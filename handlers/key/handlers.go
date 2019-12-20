@@ -46,7 +46,8 @@ func getKeysHandler(cli *_cli.CLI) http.HandlerFunc {
  * @apiParamExample {json} Request-Example:
  * {
  *	"name":"Name",
- *	"password":"password"
+ *	"password":"password",
+ *	"mnumonic":"mnumonic"
  * }
  * @apiSuccess {Boolean} success Success key.
  * @apiSuccess {object} result Success object.
