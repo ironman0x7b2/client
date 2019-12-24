@@ -3,7 +3,7 @@ package models
 import (
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/tendermint/tendermint/libs/common"
-
+	
 	"github.com/ironman0x7b2/client/types"
 )
 
@@ -16,6 +16,12 @@ type Account struct {
 }
 
 func NewAccountFromRaw(a auth.Account) (account Account) {
+	if a == nil {
+		return Account{
+			Coins: types.Coins{types.Coin{Denom: "", Value: 0}},
+		}
+	}
+	
 	if a.GetPubKey() == nil {
 		account.PubKey = ""
 	} else {
