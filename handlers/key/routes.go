@@ -14,6 +14,6 @@ func RegisterRoutes(r *mux.Router, cli *_cli.CLI) {
 		Methods("POST").Path("/keys").
 		HandlerFunc(addKeyHandler(cli))
 	r.Name("DeleteKey").
-		Methods("POST").Path("/keys/{name}").
+		Methods("DELETE").Path("/keys/{name}").
 		HandlerFunc(deleteKeyHandler(cli))
 }

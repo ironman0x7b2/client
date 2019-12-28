@@ -1,8 +1,9 @@
 package config
 
 import (
+	"log"
 	"net/http"
-
+	
 	"github.com/ironman0x7b2/client/types"
 	"github.com/ironman0x7b2/client/utils"
 )
@@ -50,17 +51,21 @@ func updateConfigHandler(config *types.Config) http.HandlerFunc {
 				Message: "failed to parse the request body",
 				Info:    err.Error(),
 			})
+			
+			log.Println(err.Error())
 			return
 		}
-
+		
 		if err = body.Validate(); err != nil {
 			utils.WriteErrorToResponse(w, 400, &types.Error{
 				Message: "failed to validate request body",
 				Info:    err.Error(),
 			})
+			
+			log.Println(err.Error())
 			return
 		}
-
+		
 		updates := &types.Config{
 			ChainID:         body.ChainID,
 			RPCAddress:      body.RPCAddress,
@@ -71,24 +76,28 @@ func updateConfigHandler(config *types.Config) http.HandlerFunc {
 			ResolverAddress: body.ResolverAddress,
 			KillSwitch:      body.KillSwitch,
 		}
-
+		
 		if err := config.UpdateHook(updates); err != nil {
 			utils.WriteErrorToResponse(w, 500, &types.Error{
 				Message: "failed to call the config update hook",
 				Info:    err.Error(),
 			})
+			
+			log.Println(err.Error())
 			return
 		}
-
+		
 		config.Update(updates)
 		if err := config.SaveToPath(""); err != nil {
 			utils.WriteErrorToResponse(w, 500, &types.Error{
 				Message: "failed to save the config",
 				Info:    err.Error(),
 			})
+			
+			log.Println(err.Error())
 			return
 		}
-
+		
 		utils.WriteResultToResponse(w, 200, config)
 	}
 }
