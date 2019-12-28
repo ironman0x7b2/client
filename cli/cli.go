@@ -3,7 +3,7 @@ package cli
 import (
 	"io/ioutil"
 	"os"
-
+	
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/crypto/keys"
@@ -25,7 +25,7 @@ func NewCLI(cdc *codec.Codec, kb keys.Keybase) *CLI {
 			Keybase:       kb,
 			Output:        os.Stdout,
 			OutputFormat:  "text",
-			BroadcastMode: "sync",
+			BroadcastMode: "block",
 			SkipConfirm:   true,
 		},
 	}
@@ -36,13 +36,13 @@ func NewVerifier(dir, id, address string) (*client.HTTP, *lite.DynamicVerifier, 
 	if err != nil {
 		return nil, nil, err
 	}
-
+	
 	c := client.NewHTTP(address, "/websocket")
-
+	
 	verifier, err := proxy.NewVerifier(id, root, c, log.NewNopLogger(), 10)
 	if err != nil {
 		return nil, nil, err
 	}
-
+	
 	return c, verifier, nil
 }
