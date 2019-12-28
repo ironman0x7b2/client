@@ -89,3 +89,79 @@ func (cli *CLI) GetTx(hash string) (interface{}, *types.Error) {
 	
 	return tx, nil
 }
+
+func (cli *CLI) GetTxs() (interface{}, *types.Error) {
+	if cli.ExplorerAddress == "" {
+		return nil, &types.Error{
+			Message: "no explorer address defined",
+			Info:    "",
+		}
+	}
+	
+	url := "http://" + cli.ExplorerAddress + "/txs"
+	
+	res, err := http.Get(url)
+	if err != nil {
+		return nil, &types.Error{
+			Message: "failed to get transactions",
+			Info:    err.Error(),
+		}
+	}
+	
+	body, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		return nil, &types.Error{
+			Message: "failed to read response body",
+			Info:    err.Error(),
+		}
+	}
+	
+	var tx interface{}
+	err = json.Unmarshal(body, &tx)
+	if err != nil {
+		return nil, &types.Error{
+			Message: "failed to unmarshal transaction",
+			Info:    err.Error(),
+		}
+	}
+	
+	return tx, nil
+}
+
+func (cli *CLI) GetBankTxs(address string) (interface{}, *types.Error) {
+	if cli.ExplorerAddress == "" {
+		return nil, &types.Error{
+			Message: "no explorer address defined",
+			Info:    "",
+		}
+	}
+	
+	url := "http://" + cli.ExplorerAddress + "/txs/bank/" + address
+	
+	res, err := http.Get(url)
+	if err != nil {
+		return nil, &types.Error{
+			Message: "failed to get transactions",
+			Info:    err.Error(),
+		}
+	}
+	
+	body, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		return nil, &types.Error{
+			Message: "failed to read response body",
+			Info:    err.Error(),
+		}
+	}
+	
+	var tx interface{}
+	err = json.Unmarshal(body, &tx)
+	if err != nil {
+		return nil, &types.Error{
+			Message: "failed to unmarshal transactions",
+			Info:    err.Error(),
+		}
+	}
+	
+	return tx, nil
+}
