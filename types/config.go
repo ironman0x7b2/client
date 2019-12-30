@@ -10,20 +10,23 @@ type Config struct {
 	ChainID         string `json:"chain_id"`
 	RPCAddress      string `json:"rpc_address"`
 	ExplorerAddress string `json:"explorer_address"`
+	ResolverAddress string `json:"resolver_address"`
 	VerifierDir     string `json:"verifier_dir"`
 	KeysDir         string `json:"keys_dir"`
-	ResolverAddress string `json:"resolver_address"`
-
+	
 	uh func(nc *Config) error
-
+	
 	TrustNode  bool `json:"trust_node"`
 	KillSwitch bool `json:"kill_switch"`
 }
 
 func NewDefaultConfig() *Config {
 	return &Config{
-		VerifierDir: DefaultConfigDir,
-		KeysDir:     DefaultConfigDir,
+		ChainID:         DefaultChainID,
+		RPCAddress:      DefaultRPCAddress,
+		ExplorerAddress: DefaultExplorerAddress,
+		VerifierDir:     DefaultConfigDir,
+		KeysDir:         DefaultConfigDir,
 	}
 }
 
@@ -54,7 +57,7 @@ func (c *Config) Update(nc *Config) {
 	if nc.ResolverAddress != "" {
 		c.ResolverAddress = nc.ResolverAddress
 	}
-
+	
 	c.TrustNode = nc.TrustNode
 	c.KillSwitch = nc.KillSwitch
 }
@@ -63,19 +66,19 @@ func (c *Config) LoadFromPath(path string) error {
 	if path == "" {
 		path = DefaultConfigFilePath
 	}
-
+	
 	if _, err := os.Stat(path); err != nil {
 		err = NewDefaultConfig().SaveToPath(path)
 		if err != nil {
 			return err
 		}
 	}
-
+	
 	data, err := ioutil.ReadFile(path)
 	if err != nil {
 		return err
 	}
-
+	
 	return json.Unmarshal(data, c)
 }
 
@@ -84,16 +87,14 @@ func (c *Config) SaveToPath(path string) error {
 	if err != nil {
 		return err
 	}
-
+	
 	if path == "" {
 		path = DefaultConfigFilePath
 	}
-
+	
 	return ioutil.WriteFile(path, bytes, os.ModePerm)
 }
 
 func (c *Config) Validate() error {
 	return nil
 }
-
-const EXPLORER = "http://localhost:8000"
