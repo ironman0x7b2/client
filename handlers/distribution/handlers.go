@@ -15,9 +15,9 @@ import (
 )
 
 /**
- * @api {post} /accounts/withdraw-withdrawRewards/{validatorAddress} withdraw withdrawRewards
+ * @api {post} /accounts/withdraw-rewards/{validatorAddress} withdraw rewards
  * @apiDescription Used to withdraw delegation WithdrawRewards from single validator
- * @apiName Withdraw-withdrawRewards
+ * @apiName Withdraw-Rewards
  * @apiGroup distribution
  * @apiParamExample {json} Request-Example:
  * {
@@ -85,9 +85,9 @@ func withdrawRewardsHandler(cli *_cli.CLI) http.HandlerFunc {
 }
 
 /**
- * @api {post} /accounts/withdraw-all-withdrawRewards withdraw all withdrawRewards
+ * @api {post} /accounts/withdraw-all-rewards withdraw all Rewards
  * @apiDescription Used to withdraw delegation WithdrawRewards form all validators
- * @apiName Withdraw-all-withdrawRewards
+ * @apiName Withdraw-all-Rewards
  * @apiGroup distribution
  * @apiParamExample {json} Request-Example:
  * {
