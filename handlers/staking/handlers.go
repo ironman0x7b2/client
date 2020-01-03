@@ -9,84 +9,9 @@ import (
 	
 	_cli "github.com/ironman0x7b2/client/cli"
 	"github.com/ironman0x7b2/client/messages"
-	"github.com/ironman0x7b2/client/models"
 	"github.com/ironman0x7b2/client/types"
 	"github.com/ironman0x7b2/client/utils"
 )
-
-/**
- * @api {get} /accounts/{address}/delegations get delegator delegations
- * @apiDescription Used to get all delegations of delegator
- * @apiName GetDelegatorDelegations
- * @apiGroup staking
- * @apiSuccess {Boolean} success Success key.
- * @apiSuccess {object} result Success object.
- */
-
-func getDelegatorDelegationsHandler(cli *_cli.CLI) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
-		
-		address, err := sdk.AccAddressFromHex(vars["address"])
-		if err != nil {
-			utils.WriteErrorToResponse(w, 400, &types.Error{
-				Message: "failed to get address",
-				Info:    err.Error(),
-			})
-			
-			log.Println(err.Error())
-			return
-		}
-		
-		delegations, _err := cli.GetDelegatorDelegations(address)
-		if _err != nil {
-			utils.WriteErrorToResponse(w, 400, _err)
-			
-			log.Println(_err.Info)
-			return
-		}
-		
-		_delegations := models.NewDelegationsFromRaw(delegations)
-		utils.WriteResultToResponse(w, 200, _delegations)
-	}
-}
-
-/**
- * @api {get} /accounts/{address}/delegations/validators get delegator validators
- * @apiDescription Used to get all validators of delegator
- * @apiName GetDelegatorValidators
- * @apiGroup staking
- * @apiSuccess {Boolean} success Success key.
- * @apiSuccess {object} result Success object.
- */
-
-func getDelegatorValidatorsHandler(cli *_cli.CLI) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
-		
-		address, err := sdk.AccAddressFromHex(vars["address"])
-		if err != nil {
-			utils.WriteErrorToResponse(w, 400, &types.Error{
-				Message: "failed to get address",
-				Info:    err.Error(),
-			})
-			
-			log.Println(err.Error())
-			return
-		}
-		
-		validators, _err := cli.GetDelegatorValidators(address)
-		if _err != nil {
-			utils.WriteErrorToResponse(w, 400, _err)
-			
-			log.Println(_err.Info)
-			return
-		}
-		
-		_validators := models.NewValidatorsFromRaw(validators)
-		utils.WriteResultToResponse(w, 200, _validators)
-	}
-}
 
 /**
  * @api {get} /validators get all validators
