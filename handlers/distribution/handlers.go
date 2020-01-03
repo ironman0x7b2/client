@@ -134,7 +134,7 @@ func withdrawAllRewardsHandler(cli *_cli.CLI) http.HandlerFunc {
 			return
 		}
 		
-		validators, _err := cli.GetDelegatorValidators(from)
+		validators, _err := cli.GetDelegatorValidatorsFromRPC(from)
 		if _err != nil {
 			utils.WriteErrorToResponse(w, 400, _err)
 			

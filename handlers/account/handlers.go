@@ -123,3 +123,65 @@ func transferCoinsHandler(cli *_cli.CLI) http.HandlerFunc {
 		utils.WriteResultToResponse(w, 200, res)
 	}
 }
+
+/**
+ * @api {get} /accounts/{address}/delegations get delegator delegations
+ * @apiDescription Used to get all delegations of delegator
+ * @apiName GetDelegatorDelegations
+ * @apiGroup account
+ * @apiSuccess {Boolean} success Success key.
+ * @apiSuccess {object} result Success object.
+ */
+
+func getDelegatorDelegationsHandler(cli *_cli.CLI) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		
+		address, err := sdk.AccAddressFromHex(vars["address"])
+		if err != nil {
+			utils.WriteErrorToResponse(w, 400, &types.Error{
+				Message: "failed to get address",
+				Info:    err.Error(),
+			})
+			
+			log.Println(err.Error())
+			return
+		}
+		
+		delegations, _err := cli.GetDelegatorDelegations(address)
+		if _err != nil {
+			utils.WriteErrorToResponse(w, 400, _err)
+			
+			log.Println(_err.Info)
+			return
+		}
+		
+		_delegations := models.NewDelegationsFromRaw(delegations)
+		utils.WriteResultToResponse(w, 200, _delegations)
+	}
+}
+
+/**
+ * @api {get} /accounts/{address}/delegations/validators get delegator validators
+ * @apiDescription Used to get all validators of delegator
+ * @apiName GetDelegatorValidators
+ * @apiGroup account
+ * @apiSuccess {Boolean} success Success key.
+ * @apiSuccess {object} result Success object.
+ */
+
+func getDelegatorValidatorsHandler(cli *_cli.CLI) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		
+		validators, _err := cli.GetDelegatorValidators(vars["address"])
+		if _err != nil {
+			utils.WriteErrorToResponse(w, 400, _err)
+			
+			log.Println(_err.Info)
+			return
+		}
+		
+		utils.WriteResultToResponse(w, 200, validators)
+	}
+}
