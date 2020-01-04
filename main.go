@@ -66,6 +66,10 @@ func main() {
 	cli := _cli.NewCLI(cdc, kb)
 	
 	cfg.SetUpdateHook(hooks.ConfigUpdateHook(cli))
+	err = cfg.UpdateHook(cfg)
+	if err != nil {
+		panic(err)
+	}
 	
 	router := mux.NewRouter()
 	router.Use(middlewares.AddHeaders)
