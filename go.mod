@@ -17,7 +17,7 @@ require (
 	github.com/prometheus/procfs v0.0.7 // indirect
 	github.com/rakyll/statik v0.1.6 // indirect
 	github.com/rcrowley/go-metrics v0.0.0-20190826022208-cac0b30c2563 // indirect
-	github.com/sentinel-official/hub v0.1.1-0.20191120110536-540390490cfe
+	github.com/sentinel-official/hub v0.2.0
 	github.com/spf13/afero v1.2.2 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/tecbot/gorocksdb v0.0.0-20191019123150-400c56251341 // indirect
