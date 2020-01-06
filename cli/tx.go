@@ -43,16 +43,12 @@ func (c *CLI) Tx(messages []sdk.Msg, memo string, gas uint64, gasAdjustment floa
 		return nil, err
 	}
 	
-	result, err := node.BroadcastTxCommit(tx)
+	result, err := node.BroadcastTxSync(tx)
 	if err != nil {
 		return nil, err
 	}
 	
-	if !result.DeliverTx.IsOK() {
-		return nil, errors.New(result.DeliverTx.Log)
-	}
-	
-	res := sdk.NewResponseFormatBroadcastTxCommit(result)
+	res := sdk.NewResponseFormatBroadcastTx(result)
 	return &res, nil
 }
 
