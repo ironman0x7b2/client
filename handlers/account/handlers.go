@@ -137,18 +137,7 @@ func getDelegatorDelegationsHandler(cli *_cli.CLI) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		
-		address, err := sdk.AccAddressFromHex(vars["address"])
-		if err != nil {
-			utils.WriteErrorToResponse(w, 400, &types.Error{
-				Message: "failed to get address",
-				Info:    err.Error(),
-			})
-			
-			log.Println(err.Error())
-			return
-		}
-		
-		delegations, _err := cli.GetDelegatorDelegations(address)
+		delegations, _err := cli.GetDelegatorDelegations(vars["address"])
 		if _err != nil {
 			utils.WriteErrorToResponse(w, 400, _err)
 			
@@ -156,8 +145,7 @@ func getDelegatorDelegationsHandler(cli *_cli.CLI) http.HandlerFunc {
 			return
 		}
 		
-		_delegations := models.NewDelegationsFromRaw(delegations)
-		utils.WriteResultToResponse(w, 200, _delegations)
+		utils.WriteResultToResponse(w, 200, delegations)
 	}
 }
 

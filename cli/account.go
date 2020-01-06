@@ -10,7 +10,6 @@ import (
 	
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
-	"github.com/cosmos/cosmos-sdk/x/staking"
 	
 	"github.com/ironman0x7b2/client/types"
 )
@@ -40,27 +39,27 @@ func (c *CLI) GetAccount(address sdk.AccAddress) (auth.Account, error) {
 	return account, nil
 }
 
-func (cli *CLI) GetDelegatorDelegations(address sdk.AccAddress) (staking.Delegations, *types.Error) {
-	params := staking.NewQueryDelegatorParams(address)
+func (cli *CLI) GetDelegatorDelegations(address string) (interface{}, *types.Error) {
+	url := "http://" + cli.ExplorerAddress + "/accounts/" + address + "/delegations"
 	
-	bz, err := cli.Codec.MarshalJSON(params)
+	res, err := http.Get(url)
 	if err != nil {
 		return nil, &types.Error{
-			Message: "failed to marshal params",
+			Message: "failed to get delegations",
 			Info:    err.Error(),
 		}
 	}
 	
-	res, _, err := cli.QueryWithData(fmt.Sprintf("custom/%s/%s", staking.QuerierRoute, staking.QueryDelegatorDelegations), bz)
+	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
 		return nil, &types.Error{
-			Message: "failed to query delegations",
+			Message: "failed to read response body",
 			Info:    err.Error(),
 		}
 	}
 	
-	var delegations staking.Delegations
-	err = json.Unmarshal(res, &delegations)
+	var delegations interface{}
+	err = json.Unmarshal(body, &delegations)
 	if err != nil {
 		return nil, &types.Error{
 			Message: "failed to unmarshal delegations",
