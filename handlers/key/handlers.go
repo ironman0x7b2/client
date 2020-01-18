@@ -1,11 +1,15 @@
 package key
 
 import (
+	"fmt"
 	"log"
 	"net/http"
+	"strings"
 	
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/go-bip39"
-	
+	"github.com/gorilla/mux"
+	// "github.com/tendermint/tendermint/libs/bech32"
 	_cli "github.com/ironman0x7b2/client/cli"
 	"github.com/ironman0x7b2/client/models"
 	"github.com/ironman0x7b2/client/types"
@@ -56,6 +60,22 @@ func getKeysHandler(cli *_cli.CLI) http.HandlerFunc {
  * @apiSuccess {object} result Success object.
  */
 
+func getKeysWithPrefixHandler(cli *_cli.CLI) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		address := vars["address"]
+		_address, err := sdk.AccAddressFromHex(address)
+		if err != nil {
+			utils.WriteErrorToResponse(w, 400, err)
+			
+			log.Println(err.Error())
+			return
+		}
+		
+		utils.WriteResultToResponse(w, 200, _address.String())
+	}
+}
+
 func addKeyHandler(cli *_cli.CLI) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		body, err := newAddKey(r)
@@ -87,6 +107,20 @@ func addKeyHandler(cli *_cli.CLI) http.HandlerFunc {
 			})
 			
 			return
+		}
+		
+		if body.Mnemonic != "" {
+			mnemonic := strings.Split(body.Mnemonic, " ")
+			fmt.Println(len(mnemonic))
+			if len(mnemonic) != 24 {
+				utils.WriteErrorToResponse(w, 400, &types.Error{
+					Message: "failed to create the new mnemonic",
+					Info:    "mnemonic should have 24 words",
+				})
+				
+				log.Println("failed to create the new mnemonic")
+				return
+			}
 		}
 		
 		if body.Mnemonic == "" {
