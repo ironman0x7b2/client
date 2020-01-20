@@ -3,9 +3,9 @@ package tx
 import (
 	"log"
 	"net/http"
-	
+
 	"github.com/gorilla/mux"
-	
+
 	_cli "github.com/ironman0x7b2/client/cli"
 	"github.com/ironman0x7b2/client/utils"
 )
@@ -21,14 +21,14 @@ import (
 
 func getTxs(cli *_cli.CLI) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		txs, err := cli.GetTxs()
+		txs, err := cli.GetTxs(r)
 		if err != nil {
 			utils.WriteErrorToResponse(w, 400, err)
-			
+
 			log.Println(err.Info)
 			return
 		}
-		
+
 		utils.WriteResultToResponse(w, 200, txs)
 	}
 }
@@ -45,13 +45,13 @@ func getTxs(cli *_cli.CLI) http.HandlerFunc {
 func getBankTxs(cli *_cli.CLI) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
-		
-		txs, err := cli.GetBankTxs(vars["address"])
+
+		txs, err := cli.GetBankTxs(vars["address"], r)
 		if err != nil {
 			utils.WriteErrorToResponse(w, 400, err)
 			return
 		}
-		
+
 		utils.WriteResultToResponse(w, 200, txs)
 	}
 }
@@ -68,13 +68,13 @@ func getBankTxs(cli *_cli.CLI) http.HandlerFunc {
 func getTx(cli *_cli.CLI) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
-		
+
 		tx, err := cli.GetTx(vars["hash"])
 		if err != nil {
 			utils.WriteErrorToResponse(w, 400, err)
 			return
 		}
-		
+
 		utils.WriteResultToResponse(w, 200, tx)
 	}
 }

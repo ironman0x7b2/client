@@ -24,7 +24,7 @@ import (
 
 func getAllValidatorsHandler(cli *_cli.CLI) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		validator, err := cli.GetAllValidators()
+		validator, err := cli.GetAllValidators(r)
 		if err != nil {
 			utils.WriteErrorToResponse(w, 400, err)
 			
