@@ -13,7 +13,7 @@ var (
 	DefaultConfigFilePath  = filepath.Join(DefaultConfigDir, "config.json")
 	DefaultChainID         = "sentinel-turing-2"
 	DefaultRPCAddress      = "rpc.turing.sentinel.co:80"
-	DefaultExplorerAddress = "api.cosmiccompass.io:8000"
+	DefaultExplorerAddress = "api.sentinel.cosmiccompass.io"
 	DefaultResolverAddress = ""
 )
 
