@@ -3,7 +3,7 @@ package models
 import (
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/tendermint/tendermint/libs/common"
-	
+
 	"github.com/ironman0x7b2/client/types"
 )
 
@@ -21,16 +21,17 @@ func NewAccountFromRaw(a auth.Account) (account Account) {
 			Coins: types.Coins{types.Coin{Denom: "", Value: 0}},
 		}
 	}
-	
+
 	if a.GetPubKey() == nil {
 		account.PubKey = ""
 	} else {
 		account.PubKey = common.HexBytes(a.GetPubKey().Bytes()).String()
 	}
-	return Account{
-		Address:  common.HexBytes(a.GetAddress().Bytes()).String(),
-		Coins:    types.NewCoinsFromRaw(a.GetCoins()),
-		Sequence: a.GetSequence(),
-		Number:   a.GetAccountNumber(),
-	}
+
+	account.Address = common.HexBytes(a.GetAddress().Bytes()).String()
+	account.Coins = types.NewCoinsFromRaw(a.GetCoins())
+	account.Sequence = a.GetSequence()
+	account.Number = a.GetAccountNumber()
+
+	return account
 }
