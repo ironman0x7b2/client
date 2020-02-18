@@ -17,10 +17,10 @@ require (
 	github.com/prometheus/procfs v0.0.7 // indirect
 	github.com/rakyll/statik v0.1.6 // indirect
 	github.com/rcrowley/go-metrics v0.0.0-20190826022208-cac0b30c2563 // indirect
+	github.com/rs/cors v1.7.0
 	github.com/sentinel-official/hub v0.2.0
 	github.com/spf13/afero v1.2.2 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
-	github.com/tecbot/gorocksdb v0.0.0-20191019123150-400c56251341 // indirect
 	github.com/tendermint/crypto v0.0.0-20191022145703-50d29ede1e15 // indirect
 	github.com/tendermint/tendermint v0.32.8
 	golang.org/x/crypto v0.0.0-20191119213627-4f8c1d86b1ba // indirect
@@ -29,3 +29,5 @@ require (
 	golang.org/x/text v0.3.2 // indirect
 	google.golang.org/genproto v0.0.0-20191115221424-83cc0476cb11 // indirect
 )
+
+replace github.com/sentinel-official/hub v0.2.0 => github.com/bitsndbyts/hub v0.2.1-0.20200214135426-a3563349e7d6

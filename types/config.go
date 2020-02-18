@@ -6,16 +6,22 @@ import (
 	"os"
 )
 
+type Resolver struct {
+	ID   string `json:"id"`
+	IP   string `json:"ip"`
+	Port uint64 `json:"port"`
+}
+
 type Config struct {
-	ChainID         string `json:"chain_id"`
-	RPCAddress      string `json:"rpc_address"`
-	ExplorerAddress string `json:"explorer_address"`
-	ResolverAddress string `json:"resolver_address"`
-	VerifierDir     string `json:"verifier_dir"`
-	KeysDir         string `json:"keys_dir"`
-	
+	ChainID         string     `json:"chain_id"`
+	RPCAddress      string     `json:"rpc_address"`
+	ExplorerAddress string     `json:"explorer_address"`
+	Resolvers       []Resolver `json:"resolvers"`
+	VerifierDir     string     `json:"verifier_dir"`
+	KeysDir         string     `json:"keys_dir"`
+
 	uh func(nc *Config) error
-	
+
 	TrustNode  bool `json:"trust_node"`
 	KillSwitch bool `json:"kill_switch"`
 }
@@ -54,10 +60,12 @@ func (c *Config) Update(nc *Config) {
 	if nc.KeysDir != "" {
 		c.KeysDir = nc.KeysDir
 	}
-	if nc.ResolverAddress != "" {
-		c.ResolverAddress = nc.ResolverAddress
+	if len(nc.Resolvers) > 0 {
+		for _, resolver := range nc.Resolvers {
+			c.Resolvers = append(c.Resolvers, resolver)
+		}
 	}
-	
+
 	c.TrustNode = nc.TrustNode
 	c.KillSwitch = nc.KillSwitch
 }
@@ -66,19 +74,19 @@ func (c *Config) LoadFromPath(path string) error {
 	if path == "" {
 		path = DefaultConfigFilePath
 	}
-	
+
 	if _, err := os.Stat(path); err != nil {
 		err = NewDefaultConfig().SaveToPath(path)
 		if err != nil {
 			return err
 		}
 	}
-	
+
 	data, err := ioutil.ReadFile(path)
 	if err != nil {
 		return err
 	}
-	
+
 	return json.Unmarshal(data, c)
 }
 
@@ -87,14 +95,18 @@ func (c *Config) SaveToPath(path string) error {
 	if err != nil {
 		return err
 	}
-	
+
 	if path == "" {
 		path = DefaultConfigFilePath
 	}
-	
+
 	return ioutil.WriteFile(path, bytes, os.ModePerm)
 }
 
 func (c *Config) Validate() error {
+	//if len(c.ResolverAddresess) == 0 {
+	//	return errors.New("Required minimun one resolver node")
+	//}
+
 	return nil
 }
