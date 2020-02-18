@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/gorilla/mux"
 
 	_cli "github.com/ironman0x7b2/client/cli"
 	"github.com/ironman0x7b2/client/messages"
@@ -12,7 +13,7 @@ import (
 	"github.com/ironman0x7b2/client/utils"
 )
 
-func startSubscription(cli *_cli.CLI) http.HandlerFunc {
+func startSubscriptionHandler(cli *_cli.CLI) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		body, err := newSubscription(r)
 		if err != nil {
@@ -61,5 +62,28 @@ func startSubscription(cli *_cli.CLI) http.HandlerFunc {
 		}
 
 		utils.WriteResultToResponse(w, 200, res)
+	}
+}
+
+func getSubscriptionsHandler(cli *_cli.CLI) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+
+		vars := mux.Vars(r)
+		address, err := sdk.AccAddressFromHex(vars["address"])
+		if err != nil {
+			utils.WriteErrorToResponse(w, 400, &types.Error{
+				Message: "failed to convert account address",
+				Info:    err.Error(),
+			})
+			return
+		}
+
+		subscriptions, _err := cli.GetSubscriptonsOfClientFromRPC(address)
+		if err != nil {
+			utils.WriteErrorToResponse(w, 400, _err)
+			return
+		}
+
+		utils.WriteResultToResponse(w, 200, subscriptions)
 	}
 }
