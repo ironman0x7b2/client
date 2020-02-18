@@ -9,5 +9,8 @@ import (
 func RegisterRoutes(r *mux.Router, _cli *cli.CLI) {
 	r.Name("StartSubscription").
 		Methods("POST").Path("/subscription").
-		HandlerFunc(startSubscription(_cli))
+		HandlerFunc(startSubscriptionHandler(_cli))
+	r.Name("GetSubscriptions").
+		Methods("Get").Path("/subscriptions/{address}").
+		HandlerFunc(getSubscriptionsHandler(_cli))
 }
