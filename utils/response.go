@@ -8,7 +8,7 @@ import (
 	"github.com/ironman0x7b2/client/types"
 )
 
-func WriteErrorToResponse(w http.ResponseWriter, code int, err interface{}) {
+func WriteErrorToResponse(w http.ResponseWriter, code int, err *types.Error) {
 	res := types.Response{
 		Success: false,
 		Error:   err,

@@ -9,48 +9,37 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/staking"
 
+	"github.com/ironman0x7b2/client/handlers/errors"
 	"github.com/ironman0x7b2/client/types"
 )
 
-func (cli *CLI) GetDelegatorValidatorsFromRPC(address sdk.AccAddress) (staking.Validators, *types.Error) {
+func (cli *CLI) GetDelegatorValidatorsFromRPC(address sdk.AccAddress, modeule string) (staking.Validators, *types.Error) {
 	params := staking.NewQueryDelegatorParams(address)
 
 	bz, err := cli.Codec.MarshalJSON(params)
 	if err != nil {
-		return nil, &types.Error{
-			Message: "failed to marshal params",
-			Info:    err.Error(),
-		}
+		return nil, errors.ErrorFailedToMarshalParams(modeule)
 	}
 
 	res, _, err := cli.QueryWithData(fmt.Sprintf("custom/%s/%s", staking.QuerierRoute, staking.QueryDelegatorValidators), bz)
 	if err != nil {
-		return nil, &types.Error{
-			Message: "failed to query delegator validators",
-			Info:    err.Error(),
-		}
+		return nil, errors.ErrorFailedToQueryValidators(modeule)
 	}
 
 	var validators staking.Validators
 	err = json.Unmarshal(res, &validators)
 	if err != nil {
-		return nil, &types.Error{
-			Message: "failed to unmarshal delegator validators",
-			Info:    err.Error(),
-		}
+		return nil, errors.ErrorFailedToUnmarshallDelegatorValidators(modeule)
 	}
 
 	return validators, nil
 }
 
-func (cli *CLI) GetAllValidators(r *http.Request) (interface{}, *types.Error) {
+func (cli *CLI) GetAllValidators(r *http.Request, module string) (interface{}, *types.Error) {
 	status := r.URL.Query().Get("status")
 
 	if cli.ExplorerAddress == "" {
-		return nil, &types.Error{
-			Message: "no explorer address defined",
-			Info:    "",
-		}
+		return nil, errors.ErrorInvalidExplorerAddress()
 	}
 	url := "http://" + cli.ExplorerAddress + "/validators"
 	if status == "active" {
@@ -62,65 +51,44 @@ func (cli *CLI) GetAllValidators(r *http.Request) (interface{}, *types.Error) {
 
 	res, err := http.Get(url)
 	if err != nil {
-		return nil, &types.Error{
-			Message: "failed to get validator",
-			Info:    err.Error(),
-		}
+		return nil, errors.ErrorFailedToGetValidator()
 	}
 
 	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
-		return nil, &types.Error{
-			Message: "failed to read response body",
-			Info:    err.Error(),
-		}
+		return nil, errors.ErrorFailedToReadResponseBody(module)
 	}
 
 	var validators interface{}
 	err = json.Unmarshal(body, &validators)
 	if err != nil {
-		return nil, &types.Error{
-			Message: "failed to unmarshal validators",
-			Info:    err.Error(),
-		}
+		return nil, errors.ErrorFailedToUnmarshallValidators()
 	}
 
 	return validators, nil
 }
 
-func (cli *CLI) GetValidator(address string) (interface{}, *types.Error) {
+func (cli *CLI) GetValidator(address string, module string) (interface{}, *types.Error) {
 	if cli.ExplorerAddress == "" {
-		return nil, &types.Error{
-			Message: "no explorer address defined",
-			Info:    "",
-		}
+		return nil, errors.ErrorInvalidExplorerAddress()
 	}
 
 	url := "http://" + cli.ExplorerAddress + "/validators/" + address
 
 	res, err := http.Get(url)
 	if err != nil {
-		return nil, &types.Error{
-			Message: "failed to get validator",
-			Info:    err.Error(),
-		}
+		return nil, errors.ErrorInvalidExplorerAddress()
 	}
 
 	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
-		return nil, &types.Error{
-			Message: "failed to read response body",
-			Info:    err.Error(),
-		}
+		return nil, errors.ErrorFailedToReadResponseBody(module)
 	}
 
 	var validator interface{}
 	err = json.Unmarshal(body, &validator)
 	if err != nil {
-		return nil, &types.Error{
-			Message: "failed to unmarshal validator",
-			Info:    err.Error(),
-		}
+		return nil, errors.ErrorFailedToUnmarshallValidator()
 	}
 
 	return validator, nil
