@@ -56,3 +56,94 @@ func (s *subscription) Validate() error {
 
 	return nil
 }
+
+type submitTxHashToNode struct {
+	NodeIP   string `json:"node_ip"`
+	NodePort uint64 `json:"node_port"`
+	TxHash   string `json:"tx_hash"`
+}
+
+func newsubmitTxHashToNode(r *http.Request) (*submitTxHashToNode, error) {
+	var body submitTxHashToNode
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		return nil, err
+	}
+
+	return &body, nil
+}
+
+func (s *submitTxHashToNode) Validate() error {
+	if s.NodeIP == "" {
+		return fmt.Errorf("invalid field node_ip")
+	}
+	if s.NodePort < 0 {
+		return fmt.Errorf("invalid field node_port")
+	}
+	if s.TxHash == "" {
+		return fmt.Errorf("invalid field tx_hash")
+	}
+
+	return nil
+}
+
+type getVPNKey struct {
+	NodeIP   string `json:"node_ip"`
+	NodePort uint64 `json:"node_port"`
+}
+
+func newGetPVNKey(r *http.Request) (*getVPNKey, error) {
+	var body getVPNKey
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		return nil, err
+	}
+
+	return &body, nil
+}
+
+func (g *getVPNKey) Validate() error {
+	if g.NodeIP == "" {
+		return fmt.Errorf("invalid field node_ip")
+	}
+	if g.NodePort < 0 {
+		return fmt.Errorf("invalid field node_port")
+	}
+
+	return nil
+}
+
+type connectVPN struct {
+	NodeIP      string `json:"node_ip"`
+	NodePort    uint64 `json:"node_port"`
+	AccountName string `json:"account_name"`
+	Password    string `json:"password"`
+	Key         string `json:"key"`
+}
+
+func newConnectVPN(r *http.Request) (*connectVPN, error) {
+	var body connectVPN
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		return nil, err
+	}
+
+	return &body, nil
+}
+
+func (c *connectVPN) Validate() error {
+	if c.NodeIP == "" {
+		return fmt.Errorf("invalid field node_ip")
+	}
+	if c.NodePort < 0 {
+		return fmt.Errorf("invalid field node_port")
+	}
+	if c.AccountName == "" {
+		return fmt.Errorf("invalid field account_name")
+	}
+	if c.Password == "" {
+		return fmt.Errorf("invalid field password")
+	}
+	if c.Key == "" {
+		return fmt.Errorf("invalid field key")
+	}
+
+	return nil
+}
