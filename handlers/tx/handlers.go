@@ -25,7 +25,7 @@ func getTxs(cli *_cli.CLI) http.HandlerFunc {
 		if err != nil {
 			utils.WriteErrorToResponse(w, 400, err)
 
-			log.Println(err.Info)
+			log.Println(err.Message)
 			return
 		}
 

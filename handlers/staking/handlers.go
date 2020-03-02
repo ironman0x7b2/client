@@ -3,13 +3,13 @@ package staking
 import (
 	"log"
 	"net/http"
-	
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/gorilla/mux"
-	
+
 	_cli "github.com/ironman0x7b2/client/cli"
+	"github.com/ironman0x7b2/client/handlers/errors"
 	"github.com/ironman0x7b2/client/messages"
-	"github.com/ironman0x7b2/client/types"
 	"github.com/ironman0x7b2/client/utils"
 )
 
@@ -22,16 +22,18 @@ import (
  * @apiSuccess {object} result Success object.
  */
 
+const MODULE = "staking"
+
 func getAllValidatorsHandler(cli *_cli.CLI) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		validator, err := cli.GetAllValidators(r)
+		validator, err := cli.GetAllValidators(r, MODULE)
 		if err != nil {
 			utils.WriteErrorToResponse(w, 400, err)
-			
-			log.Println(err.Info)
+
+			log.Println(err.Message)
 			return
 		}
-		
+
 		utils.WriteResultToResponse(w, 200, validator)
 	}
 }
@@ -48,15 +50,15 @@ func getAllValidatorsHandler(cli *_cli.CLI) http.HandlerFunc {
 func getValidatorHandler(cli *_cli.CLI) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
-		
-		validator, err := cli.GetValidator(vars["address"])
+
+		validator, err := cli.GetValidator(vars["address"], MODULE)
 		if err != nil {
 			utils.WriteErrorToResponse(w, 400, err)
-			
-			log.Println(err.Info)
+
+			log.Println(err.Message)
 			return
 		}
-		
+
 		utils.WriteResultToResponse(w, 200, validator)
 	}
 }
@@ -81,53 +83,41 @@ func getValidatorHandler(cli *_cli.CLI) http.HandlerFunc {
 func delegationHandler(cli *_cli.CLI) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
-		
+
 		body, err := newDelegate(r)
 		if err != nil {
-			utils.WriteErrorToResponse(w, 400, &types.Error{
-				Message: "failed to parse the request body",
-				Info:    err.Error(),
-			})
-			
+			utils.WriteErrorToResponse(w, 400, errors.ErrorParseRequestBody(MODULE))
+
 			log.Println(err.Error())
 			return
 		}
-		
+
 		if err = body.Validate(); err != nil {
-			utils.WriteErrorToResponse(w, 400, &types.Error{
-				Message: "failed to validate request body",
-				Info:    err.Error(),
-			})
-			
+			utils.WriteErrorToResponse(w, 400, errors.ErrorValidateRequestBody(MODULE))
+
 			log.Println(err.Error())
 			return
 		}
-		
+
 		msg, err := messages.NewDelegate(body.FromAddress, vars["validatorAddress"], body.Amount).Raw()
 		if err != nil {
-			utils.WriteErrorToResponse(w, 400, &types.Error{
-				Message: "failed to prepare the unbond message",
-				Info:    err.Error(),
-			})
-			
+			utils.WriteErrorToResponse(w, 400, errors.ErrorFailedToPrepareMsg(MODULE))
+
 			log.Println(err.Error())
 			return
 		}
-		
+
 		cli.CLIContext = cli.WithFromName(body.From)
-		
-		res, err := cli.Tx([]sdk.Msg{msg}, body.Memo, body.Gas, body.GasAdjustment,
+
+		res, _err := cli.Tx([]sdk.Msg{msg}, body.Memo, body.Gas, body.GasAdjustment,
 			body.GasPrices.Raw(), body.Fees.Raw(), body.Password)
 		if err != nil {
-			utils.WriteErrorToResponse(w, 400, &types.Error{
-				Message: "failed to broadcast the transaction",
-				Info:    err.Error(),
-			})
-			
+			utils.WriteErrorToResponse(w, 400, _err)
+
 			log.Println(err.Error())
 			return
 		}
-		
+
 		utils.WriteResultToResponse(w, 200, res)
 	}
 }
@@ -153,53 +143,41 @@ func delegationHandler(cli *_cli.CLI) http.HandlerFunc {
 func reDelegationHandler(cli *_cli.CLI) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
-		
+
 		body, err := newReDelegation(r)
 		if err != nil {
-			utils.WriteErrorToResponse(w, 400, &types.Error{
-				Message: "failed to parse the request body",
-				Info:    err.Error(),
-			})
-			
+			utils.WriteErrorToResponse(w, 400, errors.ErrorParseRequestBody(MODULE))
+
 			log.Println(err.Error())
 			return
 		}
-		
+
 		if err = body.Validate(); err != nil {
-			utils.WriteErrorToResponse(w, 400, &types.Error{
-				Message: "failed to validate request body",
-				Info:    err.Error(),
-			})
-			
+			utils.WriteErrorToResponse(w, 400, errors.ErrorValidateRequestBody(MODULE))
+
 			log.Println(err.Error())
 			return
 		}
-		
+
 		msg, err := messages.NewReDelegate(body.FromAddress, vars["valSrcAddress"], body.ValDestAddress, body.Amount).Raw()
 		if err != nil {
-			utils.WriteErrorToResponse(w, 400, &types.Error{
-				Message: "failed to prepare the re-delegate message",
-				Info:    err.Error(),
-			})
-			
+			utils.WriteErrorToResponse(w, 400, errors.ErrorFailedToPrepareMsg(MODULE))
+
 			log.Println(err.Error())
 			return
 		}
-		
+
 		cli.CLIContext = cli.WithFromName(body.From)
-		
-		res, err := cli.Tx([]sdk.Msg{msg}, body.Memo, body.Gas, body.GasAdjustment,
+
+		res, _err := cli.Tx([]sdk.Msg{msg}, body.Memo, body.Gas, body.GasAdjustment,
 			body.GasPrices.Raw(), body.Fees.Raw(), body.Password)
 		if err != nil {
-			utils.WriteErrorToResponse(w, 400, &types.Error{
-				Message: "failed to broadcast the transaction",
-				Info:    err.Error(),
-			})
-			
+			utils.WriteErrorToResponse(w, 400, _err)
+
 			log.Println(err.Error())
 			return
 		}
-		
+
 		utils.WriteResultToResponse(w, 200, res)
 	}
 }
@@ -224,53 +202,41 @@ func reDelegationHandler(cli *_cli.CLI) http.HandlerFunc {
 func unbondHandler(cli *_cli.CLI) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
-		
+
 		body, err := newUnbond(r)
 		if err != nil {
-			utils.WriteErrorToResponse(w, 400, &types.Error{
-				Message: "failed to parse the request body",
-				Info:    err.Error(),
-			})
-			
+			utils.WriteErrorToResponse(w, 400, errors.ErrorParseRequestBody(MODULE))
+
 			log.Println(err.Error())
 			return
 		}
-		
+
 		if err = body.Validate(); err != nil {
-			utils.WriteErrorToResponse(w, 400, &types.Error{
-				Message: "failed to validate request body",
-				Info:    err.Error(),
-			})
-			
+			utils.WriteErrorToResponse(w, 400, errors.ErrorValidateRequestBody(MODULE))
+
 			log.Println(err.Error())
 			return
 		}
-		
+
 		msg, err := messages.NewUnbond(body.FromAddress, vars["validatorAddress"], body.Amount).Raw()
 		if err != nil {
-			utils.WriteErrorToResponse(w, 400, &types.Error{
-				Message: "failed to prepare the unbond message",
-				Info:    err.Error(),
-			})
-			
+			utils.WriteErrorToResponse(w, 400, errors.ErrorFailedToPrepareMsg(MODULE))
+
 			log.Println(err.Error())
 			return
 		}
-		
+
 		cli.CLIContext = cli.WithFromName(body.From)
-		
-		res, err := cli.Tx([]sdk.Msg{msg}, body.Memo, body.Gas, body.GasAdjustment,
+
+		res, _err := cli.Tx([]sdk.Msg{msg}, body.Memo, body.Gas, body.GasAdjustment,
 			body.GasPrices.Raw(), body.Fees.Raw(), body.Password)
 		if err != nil {
-			utils.WriteErrorToResponse(w, 400, &types.Error{
-				Message: "failed to broadcast the transaction",
-				Info:    err.Error(),
-			})
-			
+			utils.WriteErrorToResponse(w, 400, _err)
+
 			log.Println(err.Error())
 			return
 		}
-		
+
 		utils.WriteResultToResponse(w, 200, res)
 	}
 }
