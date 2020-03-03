@@ -2,7 +2,6 @@ package cli
 
 import (
 	"encoding/json"
-	"errors"
 	"io/ioutil"
 	"net/http"
 
@@ -10,22 +9,25 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/auth/client/utils"
 
+	"github.com/ironman0x7b2/client/handlers/errors"
 	"github.com/ironman0x7b2/client/types"
 )
 
+const MODULE = "txs"
+
 func (c *CLI) Tx(messages []sdk.Msg, memo string, gas uint64, gasAdjustment float64,
-	prices sdk.DecCoins, fees sdk.Coins, password string) (*sdk.TxResponse, error) {
+	prices sdk.DecCoins, fees sdk.Coins, password string) (*sdk.TxResponse, *types.Error) {
 	key, err := c.Keybase.Get(c.FromName)
 	if err != nil {
-		return nil, err
+		return nil, errors.ErrorFailedToGetKeyInfo()
 	}
 
 	account, err := c.GetAccount(key.GetAddress())
 	if err != nil {
-		return nil, err
+		return nil, errors.ErrorQueryAccount()
 	}
 	if account == nil {
-		return nil, errors.New("account does not exist")
+		return nil, errors.ErrorAccountDoesNotExist()
 	}
 
 	txb := auth.NewTxBuilder(utils.GetTxEncoder(c.Codec),
@@ -35,56 +37,45 @@ func (c *CLI) Tx(messages []sdk.Msg, memo string, gas uint64, gasAdjustment floa
 
 	tx, err := txb.BuildAndSign(c.FromName, password, messages)
 	if err != nil {
-		return nil, err
+		return nil, errors.ErrorSignTransactions()
 	}
 
 	node, err := c.GetNode()
 	if err != nil {
-		return nil, err
+		return nil, errors.ErrorGetRPCNode()
 	}
 
 	result, err := node.BroadcastTxSync(tx)
 	if err != nil {
-		return nil, err
+		return nil, errors.ErrorFailedToBroadcastTransaction()
 	}
 
 	res := sdk.NewResponseFormatBroadcastTx(result)
+
 	return &res, nil
 }
 
 func (cli *CLI) GetTx(hash string) (interface{}, *types.Error) {
 	if cli.ExplorerAddress == "" {
-		return nil, &types.Error{
-			Message: "no explorer address defined",
-			Info:    "",
-		}
+		return nil, errors.ErrorInvalidExplorerAddress()
 	}
 
 	url := "http://" + cli.ExplorerAddress + "/txs/" + hash
 
 	res, err := http.Get(url)
 	if err != nil {
-		return nil, &types.Error{
-			Message: "failed to get transaction",
-			Info:    err.Error(),
-		}
+		return nil, errors.ErrorFailedToGetTransaction()
 	}
 
 	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
-		return nil, &types.Error{
-			Message: "failed to read response body",
-			Info:    err.Error(),
-		}
+		return nil, errors.ErrorFailedToReadResponseBody(MODULE)
 	}
 
 	var tx interface{}
 	err = json.Unmarshal(body, &tx)
 	if err != nil {
-		return nil, &types.Error{
-			Message: "failed to unmarshal transaction",
-			Info:    err.Error(),
-		}
+		return nil, errors.ErrorFailedToUnmarshalTransaction()
 	}
 
 	return tx, nil
@@ -94,10 +85,7 @@ func (cli *CLI) GetTxs(r *http.Request) (interface{}, *types.Error) {
 	signers := r.URL.Query().Get("signers")
 
 	if cli.ExplorerAddress == "" {
-		return nil, &types.Error{
-			Message: "no explorer address defined",
-			Info:    "",
-		}
+		return nil, errors.ErrorInvalidExplorerAddress()
 	}
 
 	url := "http://" + cli.ExplorerAddress + "/txs"
@@ -107,27 +95,18 @@ func (cli *CLI) GetTxs(r *http.Request) (interface{}, *types.Error) {
 
 	res, err := http.Get(url)
 	if err != nil {
-		return nil, &types.Error{
-			Message: "failed to get transactions",
-			Info:    err.Error(),
-		}
+		return nil, errors.ErrorFailedToGetTransactions()
 	}
 
 	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
-		return nil, &types.Error{
-			Message: "failed to read response body",
-			Info:    err.Error(),
-		}
+		return nil, errors.ErrorFailedToReadResponseBody(MODULE)
 	}
 
 	var tx interface{}
 	err = json.Unmarshal(body, &tx)
 	if err != nil {
-		return nil, &types.Error{
-			Message: "failed to unmarshal transaction",
-			Info:    err.Error(),
-		}
+		return nil, errors.ErrorFailedToUnmarshalTransactions()
 	}
 
 	return tx, nil
@@ -137,10 +116,7 @@ func (cli *CLI) GetBankTxs(address string, r *http.Request) (interface{}, *types
 	_type := r.URL.Query().Get("type")
 
 	if cli.ExplorerAddress == "" {
-		return nil, &types.Error{
-			Message: "no explorer address defined",
-			Info:    "",
-		}
+		return nil, errors.ErrorInvalidExplorerAddress()
 	}
 
 	url := "http://" + cli.ExplorerAddress + "/txs/bank/" + address
@@ -153,27 +129,18 @@ func (cli *CLI) GetBankTxs(address string, r *http.Request) (interface{}, *types
 
 	res, err := http.Get(url)
 	if err != nil {
-		return nil, &types.Error{
-			Message: "failed to get transactions",
-			Info:    err.Error(),
-		}
+		return nil, errors.ErrorFailedToGetTransactions()
 	}
 
 	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
-		return nil, &types.Error{
-			Message: "failed to read response body",
-			Info:    err.Error(),
-		}
+		return nil, errors.ErrorFailedToReadResponseBody(MODULE)
 	}
 
 	var tx interface{}
 	err = json.Unmarshal(body, &tx)
 	if err != nil {
-		return nil, &types.Error{
-			Message: "failed to unmarshal transactions",
-			Info:    err.Error(),
-		}
+		return nil, errors.ErrorFailedToUnmarshalTransactions()
 	}
 
 	return tx, nil

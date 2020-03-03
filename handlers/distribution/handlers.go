@@ -3,14 +3,14 @@ package distribution
 import (
 	"log"
 	"net/http"
-	
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/gorilla/mux"
 	"github.com/tendermint/tendermint/libs/common"
-	
+
 	_cli "github.com/ironman0x7b2/client/cli"
+	"github.com/ironman0x7b2/client/handlers/errors"
 	"github.com/ironman0x7b2/client/messages"
-	"github.com/ironman0x7b2/client/types"
 	"github.com/ironman0x7b2/client/utils"
 )
 
@@ -29,57 +29,46 @@ import (
  * @apiSuccess {Boolean} success Success key.
  * @apiSuccess {object} result Success object.
  */
+const MODULE = "distribution"
 
 func withdrawRewardsHandler(cli *_cli.CLI) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
-		
+
 		body, err := newRewards(r)
 		if err != nil {
-			utils.WriteErrorToResponse(w, 400, &types.Error{
-				Message: "failed to parse the request body",
-				Info:    err.Error(),
-			})
-			
+			utils.WriteErrorToResponse(w, 400, errors.ErrorParseRequestBody(MODULE))
+
 			log.Println(err.Error())
 			return
 		}
-		
+
 		if err = body.Validate(); err != nil {
-			utils.WriteErrorToResponse(w, 400, &types.Error{
-				Message: "failed to validate request body",
-				Info:    err.Error(),
-			})
-			
+			utils.WriteErrorToResponse(w, 400, errors.ErrorValidateRequestBody(MODULE))
+
 			log.Println(err.Error())
 			return
 		}
-		
+
 		msg, err := messages.NewWithdrawRewards(body.FromAddress, vars["validatorAddress"]).Raw()
 		if err != nil {
-			utils.WriteErrorToResponse(w, 400, &types.Error{
-				Message: "failed to prepare the withdrawRewards message",
-				Info:    err.Error(),
-			})
-			
+			utils.WriteErrorToResponse(w, 400, errors.ErrorFailedToPrepareMsg(MODULE))
+
 			log.Println(err.Error())
 			return
 		}
-		
+
 		cli.CLIContext = cli.WithFromName(body.From)
-		
-		res, err := cli.Tx([]sdk.Msg{msg}, body.Memo, body.Gas, body.GasAdjustment,
+
+		res, _err := cli.Tx([]sdk.Msg{msg}, body.Memo, body.Gas, body.GasAdjustment,
 			body.GasPrices.Raw(), body.Fees.Raw(), body.Password)
 		if err != nil {
-			utils.WriteErrorToResponse(w, 400, &types.Error{
-				Message: "failed to broadcast the transaction",
-				Info:    err.Error(),
-			})
-			
+			utils.WriteErrorToResponse(w, 400, _err)
+
 			log.Println(err.Error())
 			return
 		}
-		
+
 		utils.WriteResultToResponse(w, 200, res)
 	}
 }
@@ -104,73 +93,58 @@ func withdrawAllRewardsHandler(cli *_cli.CLI) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		body, err := newRewards(r)
 		if err != nil {
-			utils.WriteErrorToResponse(w, 400, &types.Error{
-				Message: "failed to parse the request body",
-				Info:    err.Error(),
-			})
-			
+			utils.WriteErrorToResponse(w, 400, errors.ErrorParseRequestBody(MODULE))
+
 			log.Println(err.Error())
 			return
 		}
-		
+
 		if err = body.Validate(); err != nil {
-			utils.WriteErrorToResponse(w, 400, &types.Error{
-				Message: "failed to validate request body",
-				Info:    err.Error(),
-			})
-			
+			utils.WriteErrorToResponse(w, 400, errors.ErrorValidateRequestBody(MODULE))
+
 			log.Println(err.Error())
 			return
 		}
-		
+
 		from, err := sdk.AccAddressFromHex(body.FromAddress)
 		if err != nil {
-			utils.WriteErrorToResponse(w, 400, &types.Error{
-				Message: "failed to convert account address",
-				Info:    err.Error(),
-			})
-			
+			utils.WriteErrorToResponse(w, 400, errors.ErrorDecodeAddress(MODULE))
+
 			log.Println(err.Error())
 			return
 		}
-		
-		validators, _err := cli.GetDelegatorValidatorsFromRPC(from)
+
+		validators, _err := cli.GetDelegatorValidatorsFromRPC(from, MODULE)
 		if _err != nil {
 			utils.WriteErrorToResponse(w, 400, _err)
-			
+
 			log.Println(err.Error())
 			return
 		}
-		
+
 		var msgs []sdk.Msg
 		for _, validator := range validators {
 			msg, err := messages.NewWithdrawRewards(body.FromAddress, common.HexBytes(validator.OperatorAddress.Bytes()).String()).Raw()
 			if err != nil {
-				utils.WriteErrorToResponse(w, 400, &types.Error{
-					Message: "failed to prepare the withdrawRewards message",
-					Info:    err.Error(),
-				})
-				
+				utils.WriteErrorToResponse(w, 400, errors.ErrorFailedToPrepareMsg(MODULE))
+
 				log.Println(err.Error())
 				return
 			}
 			msgs = append(msgs, msg)
 		}
-		
+
 		cli.CLIContext = cli.WithFromName(body.From)
-		
-		res, err := cli.Tx(msgs, body.Memo, body.Gas, body.GasAdjustment,
+
+		res, _err := cli.Tx(msgs, body.Memo, body.Gas, body.GasAdjustment,
 			body.GasPrices.Raw(), body.Fees.Raw(), body.Password)
 		if err != nil {
-			utils.WriteErrorToResponse(w, 400, &types.Error{
-				Message: "failed to broadcast the transaction",
-				Info:    err.Error(),
-			})
-			
+			utils.WriteErrorToResponse(w, 400, _err)
+
 			log.Println(err.Error())
 			return
 		}
-		
+
 		utils.WriteResultToResponse(w, 200, res)
 	}
 }
