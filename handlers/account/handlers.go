@@ -3,14 +3,15 @@ package account
 import (
 	"log"
 	"net/http"
-	
+
+	"github.com/ironman0x7b2/client/handlers/errors"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/gorilla/mux"
-	
+
 	_cli "github.com/ironman0x7b2/client/cli"
 	"github.com/ironman0x7b2/client/messages"
 	"github.com/ironman0x7b2/client/models"
-	"github.com/ironman0x7b2/client/types"
 	"github.com/ironman0x7b2/client/utils"
 )
 
@@ -22,33 +23,28 @@ import (
  * @apiSuccess {Boolean} success Success key.
  * @apiSuccess {object} result Success object.
  */
+const MODULE = "account"
 
 func getAccountHandler(cli *_cli.CLI) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
-		
+
 		address, err := sdk.AccAddressFromHex(vars["address"])
 		if err != nil {
-			utils.WriteErrorToResponse(w, 400, &types.Error{
-				Message: "failed to decode the address",
-				Info:    err.Error(),
-			})
-			
+			utils.WriteErrorToResponse(w, 400, errors.ErrorDecodeAddress(MODULE))
+
 			log.Println(err.Error())
 			return
 		}
-		
+
 		account, err := cli.GetAccount(address)
 		if err != nil {
-			utils.WriteErrorToResponse(w, 400, &types.Error{
-				Message: "failed to query the account",
-				Info:    err.Error(),
-			})
-			
+			utils.WriteErrorToResponse(w, 400, errors.ErrorQueryAccount())
+
 			log.Println(err.Error())
 			return
 		}
-		
+
 		_account := models.NewAccountFromRaw(account)
 		utils.WriteResultToResponse(w, 200, _account)
 	}
@@ -76,50 +72,38 @@ func transferCoinsHandler(cli *_cli.CLI) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		body, err := newTransferCoins(r)
 		if err != nil {
-			utils.WriteErrorToResponse(w, 400, &types.Error{
-				Message: "failed to parse the request body",
-				Info:    err.Error(),
-			})
-			
+			utils.WriteErrorToResponse(w, 400, errors.ErrorParseRequestBody(MODULE))
+
 			log.Println(err.Error())
 			return
 		}
-		
+
 		if err = body.Validate(); err != nil {
-			utils.WriteErrorToResponse(w, 400, &types.Error{
-				Message: "failed to validate request body",
-				Info:    err.Error(),
-			})
-			
+			utils.WriteErrorToResponse(w, 400, errors.ErrorValidateRequestBody(MODULE))
+
 			log.Println(err.Error())
 			return
 		}
-		
+
 		msg, err := messages.NewSend(body.FromAddress, body.ToAddress, body.Amount).Raw()
 		if err != nil {
-			utils.WriteErrorToResponse(w, 400, &types.Error{
-				Message: "failed to prepare the transfer message",
-				Info:    err.Error(),
-			})
-			
+			utils.WriteErrorToResponse(w, 400, errors.ErrorFailedToPrepareMsg(MODULE))
+
 			log.Println(err.Error())
 			return
 		}
-		
+
 		cli.CLIContext = cli.WithFromName(body.From)
-		
-		res, err := cli.Tx([]sdk.Msg{msg}, body.Memo, body.Gas, body.GasAdjustment,
+
+		res, _err := cli.Tx([]sdk.Msg{msg}, body.Memo, body.Gas, body.GasAdjustment,
 			body.GasPrices.Raw(), body.Fees.Raw(), body.Password)
 		if err != nil {
-			utils.WriteErrorToResponse(w, 400, &types.Error{
-				Message: "failed to broadcast the transaction",
-				Info:    err.Error(),
-			})
-			
+			utils.WriteErrorToResponse(w, 400, _err)
+
 			log.Println(err.Error())
 			return
 		}
-		
+
 		utils.WriteResultToResponse(w, 200, res)
 	}
 }
@@ -136,15 +120,15 @@ func transferCoinsHandler(cli *_cli.CLI) http.HandlerFunc {
 func getDelegatorDelegationsHandler(cli *_cli.CLI) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
-		
-		delegations, _err := cli.GetDelegatorDelegations(vars["address"])
-		if _err != nil {
-			utils.WriteErrorToResponse(w, 400, _err)
-			
-			log.Println(_err.Info)
+
+		delegations, err := cli.GetDelegatorDelegations(vars["address"])
+		if err != nil {
+			utils.WriteErrorToResponse(w, 400, errors.ErrorFailedToGetDelegatorDelegations())
+
+			log.Println(err)
 			return
 		}
-		
+
 		utils.WriteResultToResponse(w, 200, delegations)
 	}
 }
@@ -161,15 +145,15 @@ func getDelegatorDelegationsHandler(cli *_cli.CLI) http.HandlerFunc {
 func getDelegatorValidatorsHandler(cli *_cli.CLI) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
-		
-		validators, _err := cli.GetDelegatorValidators(vars["address"])
-		if _err != nil {
-			utils.WriteErrorToResponse(w, 400, _err)
-			
-			log.Println(_err.Info)
+
+		validators, err := cli.GetDelegatorValidators(vars["address"])
+		if err != nil {
+			utils.WriteErrorToResponse(w, 400, errors.ErrorFailedToGetDelegatorValidators())
+
+			log.Println(err)
 			return
 		}
-		
+
 		utils.WriteResultToResponse(w, 200, validators)
 	}
 }

@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/ironman0x7b2/client/handlers/errors"
 	"github.com/ironman0x7b2/client/types"
 	"github.com/ironman0x7b2/client/utils"
 )
@@ -16,6 +17,8 @@ import (
  * @apiSuccess {Boolean} success Success key.
  * @apiSuccess {object} result Success object.
  */
+
+const MODULE = "config"
 
 func getConfigHandler(config *types.Config) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -47,20 +50,14 @@ func updateConfigHandler(config *types.Config) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		body, err := newUpdateConfig(r)
 		if err != nil {
-			utils.WriteErrorToResponse(w, 400, &types.Error{
-				Message: "failed to parse the request body",
-				Info:    err.Error(),
-			})
+			utils.WriteErrorToResponse(w, 400, errors.ErrorParseRequestBody(MODULE))
 
 			log.Println(err.Error())
 			return
 		}
 
 		if err = body.Validate(); err != nil {
-			utils.WriteErrorToResponse(w, 400, &types.Error{
-				Message: "failed to validate request body",
-				Info:    err.Error(),
-			})
+			utils.WriteErrorToResponse(w, 400, errors.ErrorValidateRequestBody(MODULE))
 
 			log.Println(err.Error())
 			return
@@ -78,10 +75,7 @@ func updateConfigHandler(config *types.Config) http.HandlerFunc {
 		}
 
 		if err := config.UpdateHook(updates); err != nil {
-			utils.WriteErrorToResponse(w, 500, &types.Error{
-				Message: "failed to call the config update hook",
-				Info:    err.Error(),
-			})
+			utils.WriteErrorToResponse(w, 500, errors.ErrorFailedToCallUpdateHook())
 
 			log.Println(err.Error())
 			return
@@ -89,10 +83,7 @@ func updateConfigHandler(config *types.Config) http.HandlerFunc {
 
 		config.Update(updates)
 		if err := config.SaveToPath(""); err != nil {
-			utils.WriteErrorToResponse(w, 500, &types.Error{
-				Message: "failed to save the config",
-				Info:    err.Error(),
-			})
+			utils.WriteErrorToResponse(w, 500, errors.ErrorFailedToSaveConfig())
 
 			log.Println(err.Error())
 			return
