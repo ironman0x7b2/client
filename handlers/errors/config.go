@@ -11,7 +11,7 @@ const (
 	errFailedToSaveConfig     = 7
 
 	errMsgFailedToCallUpdateHook = "failed to call update hook"
-	errMsgFailedToSaveConfig     = "failed to to save config"
+	errMsgFailedToSaveConfig     = "failed to save config"
 )
 
 func ErrorFailedToCallUpdateHook() *types.Error {

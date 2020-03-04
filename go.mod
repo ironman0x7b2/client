@@ -8,6 +8,7 @@ require (
 	github.com/cosmos/cosmos-sdk v0.37.4
 	github.com/cosmos/go-bip39 v0.0.0-20180819234021-555e2067c45d
 	github.com/cosmos/ledger-cosmos-go v0.11.1 // indirect
+	github.com/gorilla/context v1.1.1
 	github.com/gorilla/mux v1.7.3
 	github.com/gorilla/websocket v1.4.1
 	github.com/mattn/go-isatty v0.0.10 // indirect
