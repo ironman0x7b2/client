@@ -97,10 +97,10 @@ func transferCoinsHandler(cli *_cli.CLI) http.HandlerFunc {
 
 		res, _err := cli.Tx([]sdk.Msg{msg}, body.Memo, body.Gas, body.GasAdjustment,
 			body.GasPrices.Raw(), body.Fees.Raw(), body.Password)
-		if err != nil {
+		if _err != nil {
 			utils.WriteErrorToResponse(w, 400, _err)
 
-			log.Println(err.Error())
+			log.Println(_err.Message)
 			return
 		}
 
