@@ -199,8 +199,6 @@ func ConnectVPN(from, password, subscriptionID, nodeIP string, nodePort string) 
 		log.Fatal("dial:", err.Error())
 	}
 
-	defer c.Close()
-
 	kb, err := keys.NewKeyBaseFromDir(types.DefaultConfigDir)
 	if err != nil {
 		panic(err)
