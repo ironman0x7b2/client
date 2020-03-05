@@ -7,10 +7,13 @@ import (
 )
 
 func RegisterRoutes(r *mux.Router, _cli *cli.CLI) {
+	r.Name("GetSubscriptions").
+		Methods("GET").Path("/subscriptions/{address}").
+		HandlerFunc(getSubscriptionsHandler(_cli))
 	r.Name("VPNConnection").
-		Methods("POST").Path("/connect/new").
+		Methods("POST").Path("/connection").
 		HandlerFunc(connectVPNHandler(_cli))
 	r.Name("EndConnection").
-		Methods("POST").Path("/connect/end").
+		Methods("DELETE").Path("/connection").
 		HandlerFunc(endVPNHandler())
 }

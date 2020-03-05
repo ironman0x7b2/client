@@ -52,7 +52,9 @@ func connectVPNHandler(cli *_cli.CLI) http.HandlerFunc {
 
 func endVPNHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+
 		disConnCmd := "sudo killall openvpn"
+
 		cmd := exec.Command("/bin/sh", "-c", disConnCmd)
 		_, err := cmd.Output()
 		if err != nil {
