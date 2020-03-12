@@ -15,6 +15,7 @@ import (
 
 type CLI struct {
 	context.CLIContext
+	ExplorerAddress string
 }
 
 func NewCLI(cdc *codec.Codec, kb keys.Keybase) *CLI {
