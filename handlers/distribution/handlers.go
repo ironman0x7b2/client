@@ -9,7 +9,7 @@ import (
 	"github.com/tendermint/tendermint/libs/common"
 
 	_cli "github.com/ironman0x7b2/client/cli"
-	"github.com/ironman0x7b2/client/handlers/errors"
+	_common "github.com/ironman0x7b2/client/handlers/common"
 	"github.com/ironman0x7b2/client/messages"
 	"github.com/ironman0x7b2/client/utils"
 )
@@ -37,14 +37,14 @@ func withdrawRewardsHandler(cli *_cli.CLI) http.HandlerFunc {
 
 		body, err := newRewards(r)
 		if err != nil {
-			utils.WriteErrorToResponse(w, 400, errors.ErrorParseRequestBody(MODULE))
+			utils.WriteErrorToResponse(w, 400, _common.ErrorParseRequestBody(MODULE))
 
 			log.Println(err.Error())
 			return
 		}
 
 		if err = body.Validate(); err != nil {
-			utils.WriteErrorToResponse(w, 400, errors.ErrorValidateRequestBody(MODULE))
+			utils.WriteErrorToResponse(w, 400, _common.ErrorValidateRequestBody(MODULE))
 
 			log.Println(err.Error())
 			return
@@ -52,7 +52,7 @@ func withdrawRewardsHandler(cli *_cli.CLI) http.HandlerFunc {
 
 		msg, err := messages.NewWithdrawRewards(body.FromAddress, vars["validatorAddress"]).Raw()
 		if err != nil {
-			utils.WriteErrorToResponse(w, 400, errors.ErrorFailedToPrepareMsg(MODULE))
+			utils.WriteErrorToResponse(w, 400, _common.ErrorFailedToPrepareMsg(MODULE))
 
 			log.Println(err.Error())
 			return
@@ -62,10 +62,10 @@ func withdrawRewardsHandler(cli *_cli.CLI) http.HandlerFunc {
 
 		res, _err := cli.Tx([]sdk.Msg{msg}, body.Memo, body.Gas, body.GasAdjustment,
 			body.GasPrices.Raw(), body.Fees.Raw(), body.Password)
-		if err != nil {
-			utils.WriteErrorToResponse(w, 400, _err)
+		if _err != nil {
+			utils.WriteErrorToResponse(w, 400, _common.ErrorFailedToBroadcastTransaction(MODULE))
 
-			log.Println(err.Error())
+			log.Println(_err.Error())
 			return
 		}
 
@@ -93,14 +93,14 @@ func withdrawAllRewardsHandler(cli *_cli.CLI) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		body, err := newRewards(r)
 		if err != nil {
-			utils.WriteErrorToResponse(w, 400, errors.ErrorParseRequestBody(MODULE))
+			utils.WriteErrorToResponse(w, 400, _common.ErrorParseRequestBody(MODULE))
 
 			log.Println(err.Error())
 			return
 		}
 
 		if err = body.Validate(); err != nil {
-			utils.WriteErrorToResponse(w, 400, errors.ErrorValidateRequestBody(MODULE))
+			utils.WriteErrorToResponse(w, 400, _common.ErrorValidateRequestBody(MODULE))
 
 			log.Println(err.Error())
 			return
@@ -108,15 +108,15 @@ func withdrawAllRewardsHandler(cli *_cli.CLI) http.HandlerFunc {
 
 		from, err := sdk.AccAddressFromHex(body.FromAddress)
 		if err != nil {
-			utils.WriteErrorToResponse(w, 400, errors.ErrorDecodeAddress(MODULE))
+			utils.WriteErrorToResponse(w, 400, _common.ErrorDecodeAddress(MODULE))
 
 			log.Println(err.Error())
 			return
 		}
 
-		validators, _err := cli.GetDelegatorValidatorsFromRPC(from, MODULE)
+		validators, _err := cli.GetDelegatorValidatorsFromRPC(from)
 		if _err != nil {
-			utils.WriteErrorToResponse(w, 400, _err)
+			utils.WriteErrorToResponse(w, 400, _common.ErrorFailedToGetDelegatorValidators(MODULE))
 
 			log.Println(err.Error())
 			return
@@ -126,7 +126,7 @@ func withdrawAllRewardsHandler(cli *_cli.CLI) http.HandlerFunc {
 		for _, validator := range validators {
 			msg, err := messages.NewWithdrawRewards(body.FromAddress, common.HexBytes(validator.OperatorAddress.Bytes()).String()).Raw()
 			if err != nil {
-				utils.WriteErrorToResponse(w, 400, errors.ErrorFailedToPrepareMsg(MODULE))
+				utils.WriteErrorToResponse(w, 400, _common.ErrorFailedToPrepareMsg(MODULE))
 
 				log.Println(err.Error())
 				return
@@ -138,10 +138,10 @@ func withdrawAllRewardsHandler(cli *_cli.CLI) http.HandlerFunc {
 
 		res, _err := cli.Tx(msgs, body.Memo, body.Gas, body.GasAdjustment,
 			body.GasPrices.Raw(), body.Fees.Raw(), body.Password)
-		if err != nil {
-			utils.WriteErrorToResponse(w, 400, _err)
+		if _err != nil {
+			utils.WriteErrorToResponse(w, 400, _common.ErrorFailedToBroadcastTransaction(MODULE))
 
-			log.Println(err.Error())
+			log.Println(_err.Error())
 			return
 		}
 
