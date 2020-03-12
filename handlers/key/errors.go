@@ -1,4 +1,4 @@
-package errors
+package key
 
 import (
 	"github.com/ironman0x7b2/client/types"
@@ -7,12 +7,12 @@ import (
 const (
 	KEY = "key"
 
-	errFailedToListKeys         = 8
-	errDuplicateName            = 9
-	errFailedToCreatingMnemonic = 10
-	errInvalidMnemonic          = 11
-	errFailedToCreateKey        = 12
-	errFailedToDeleteKey        = 13
+	errFailedToListKeys         = 12
+	errDuplicateName            = 13
+	errFailedToCreatingMnemonic = 14
+	errInvalidMnemonic          = 15
+	errFailedToCreateKey        = 16
+	errFailedToDeleteKey        = 17
 
 	errMsgFailedToListKeys         = "failed to list the keys"
 	errMsgDuplicateName            = "duplicate key name"
@@ -22,21 +22,21 @@ const (
 	errMsgFailedToDeleteKey        = "failed to deleting key"
 )
 
-func ErrorFailedToListKeys() *types.Error {
+func errorFailedToListKeys() *types.Error {
 	return types.NewError(KEY, errFailedToListKeys, errMsgFailedToListKeys)
 }
-func ErrorDuplicateKeyName() *types.Error {
+func errorDuplicateKeyName() *types.Error {
 	return types.NewError(KEY, errDuplicateName, errMsgDuplicateName)
 }
-func ErrorFailedToCreateMnemonic() *types.Error {
+func errorFailedToCreateMnemonic() *types.Error {
 	return types.NewError(KEY, errFailedToCreatingMnemonic, errMsgFailedToCreatingMnemonic)
 }
-func ErrorInvalidMnemonic() *types.Error {
+func errorInvalidMnemonic() *types.Error {
 	return types.NewError(KEY, errInvalidMnemonic, errMsgInvalidMnemonic)
 }
-func ErrorFailedToCreateKey() *types.Error {
+func errorFailedToCreateKey() *types.Error {
 	return types.NewError(KEY, errFailedToCreateKey, errMsgFailedToCreateKey)
 }
-func ErrorFailedToDeleteKey() *types.Error {
+func errorFailedToDeleteKey() *types.Error {
 	return types.NewError(KEY, errFailedToDeleteKey, errMsgFailedToDeleteKey)
 }

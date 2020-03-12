@@ -9,7 +9,7 @@ import (
 	"github.com/gorilla/mux"
 
 	_cli "github.com/ironman0x7b2/client/cli"
-	"github.com/ironman0x7b2/client/handlers/errors"
+	"github.com/ironman0x7b2/client/handlers/common"
 	"github.com/ironman0x7b2/client/messages"
 	"github.com/ironman0x7b2/client/models"
 	"github.com/ironman0x7b2/client/utils"
@@ -32,7 +32,7 @@ func getAllProposalsHandler(cli *_cli.CLI) http.HandlerFunc {
 		if l := r.URL.Query().Get("limit"); len(l) != 0 {
 			i, err := strconv.ParseUint(l, 10, 64)
 			if err != nil {
-				utils.WriteErrorToResponse(w, 400, errors.ErrorParseQueryParams(MODULE))
+				utils.WriteErrorToResponse(w, 400, common.ErrorParseQueryParams(MODULE))
 
 				log.Println(err.Error())
 				return
@@ -40,11 +40,11 @@ func getAllProposalsHandler(cli *_cli.CLI) http.HandlerFunc {
 			limit = i
 		}
 
-		proposals, err := cli.GetAllProposals(limit, MODULE)
+		proposals, err := cli.GetAllProposals(limit)
 		if err != nil {
-			utils.WriteErrorToResponse(w, 400, err)
+			utils.WriteErrorToResponse(w, 400, errorFailedToGetProposals())
 
-			log.Println(err.Message)
+			log.Println(err.Error())
 			return
 		}
 
@@ -70,7 +70,7 @@ func getProposalHandler(cli *_cli.CLI) http.HandlerFunc {
 		if len(id) != 0 {
 			_id, err := strconv.ParseUint(id, 10, 64)
 			if err != nil {
-				utils.WriteErrorToResponse(w, 400, errors.ErrorParseQueryParams(MODULE))
+				utils.WriteErrorToResponse(w, 400, common.ErrorParseQueryParams(MODULE))
 
 				log.Println(err.Error())
 				return
@@ -78,11 +78,11 @@ func getProposalHandler(cli *_cli.CLI) http.HandlerFunc {
 			pid = _id
 		}
 
-		proposal, err := cli.GetProposal(pid, MODULE)
+		proposal, err := cli.GetProposal(pid)
 		if err != nil {
-			utils.WriteErrorToResponse(w, 400, err)
+			utils.WriteErrorToResponse(w, 400, errorFailedToGetProposal())
 
-			log.Println(err.Message)
+			log.Println(err.Error())
 			return
 		}
 
@@ -108,7 +108,7 @@ func getProposalVotesHandler(cli *_cli.CLI) http.HandlerFunc {
 		if len(id) != 0 {
 			_id, err := strconv.ParseUint(id, 10, 64)
 			if err != nil {
-				utils.WriteErrorToResponse(w, 400, errors.ErrorParseQueryParams(MODULE))
+				utils.WriteErrorToResponse(w, 400, common.ErrorParseQueryParams(MODULE))
 
 				log.Println(err.Error())
 				return
@@ -116,11 +116,11 @@ func getProposalVotesHandler(cli *_cli.CLI) http.HandlerFunc {
 			pid = _id
 		}
 
-		votes, err := cli.GetProposalVotes(pid, MODULE)
+		votes, err := cli.GetProposalVotes(pid)
 		if err != nil {
-			utils.WriteErrorToResponse(w, 400, err)
+			utils.WriteErrorToResponse(w, 400, errorFailedToGetProposalVotes())
 
-			log.Println(err)
+			log.Println(err.Error())
 			return
 		}
 
@@ -149,7 +149,7 @@ func getProposalVoteHandler(cli *_cli.CLI) http.HandlerFunc {
 		if len(id) != 0 {
 			_id, err := strconv.ParseUint(id, 10, 64)
 			if err != nil {
-				utils.WriteErrorToResponse(w, 400, errors.ErrorParseQueryParams(MODULE))
+				utils.WriteErrorToResponse(w, 400, common.ErrorParseQueryParams(MODULE))
 
 				log.Println(err.Error())
 				return
@@ -161,7 +161,7 @@ func getProposalVoteHandler(cli *_cli.CLI) http.HandlerFunc {
 		if len(id) != 0 {
 			_address, err := sdk.AccAddressFromHex(address)
 			if err != nil {
-				utils.WriteErrorToResponse(w, 400, errors.ErrorDecodeAddress(MODULE))
+				utils.WriteErrorToResponse(w, 400, common.ErrorDecodeAddress(MODULE))
 
 				log.Println(err.Error())
 				return
@@ -171,9 +171,9 @@ func getProposalVoteHandler(cli *_cli.CLI) http.HandlerFunc {
 
 		vote, err := cli.GetProposalVote(pid, vAddress)
 		if err != nil {
-			utils.WriteErrorToResponse(w, 400, err)
+			utils.WriteErrorToResponse(w, 400, errorFailedToGetProposalVote())
 
-			log.Println(err.Message)
+			log.Println(err.Error())
 			return
 		}
 
@@ -206,14 +206,14 @@ func submitProposalHandler(cli *_cli.CLI) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		body, err := newProposal(r)
 		if err != nil {
-			utils.WriteErrorToResponse(w, 400, errors.ErrorParseRequestBody(MODULE))
+			utils.WriteErrorToResponse(w, 400, common.ErrorParseRequestBody(MODULE))
 
 			log.Println(err.Error())
 			return
 		}
 
 		if err = body.Validate(); err != nil {
-			utils.WriteErrorToResponse(w, 400, errors.ErrorValidateRequestBody(MODULE))
+			utils.WriteErrorToResponse(w, 400, common.ErrorValidateRequestBody(MODULE))
 
 			log.Println(err.Error())
 			return
@@ -221,7 +221,7 @@ func submitProposalHandler(cli *_cli.CLI) http.HandlerFunc {
 
 		msg, err := messages.NewProposal(body.FromAddress, body.Title, body.Description, body.Type, body.Amount).Raw()
 		if err != nil {
-			utils.WriteErrorToResponse(w, 400, errors.ErrorFailedToPrepareMsg(MODULE))
+			utils.WriteErrorToResponse(w, 400, common.ErrorFailedToPrepareMsg(MODULE))
 
 			log.Println(err.Error())
 			return
@@ -231,10 +231,10 @@ func submitProposalHandler(cli *_cli.CLI) http.HandlerFunc {
 
 		res, _err := cli.Tx([]sdk.Msg{msg}, body.Memo, body.Gas, body.GasAdjustment,
 			body.GasPrices.Raw(), body.Fees.Raw(), body.Password)
-		if err != nil {
-			utils.WriteErrorToResponse(w, 400, _err)
+		if _err != nil {
+			utils.WriteErrorToResponse(w, 400, common.ErrorFailedToBroadcastTransaction(MODULE))
 
-			log.Println(err.Error())
+			log.Println(_err.Error())
 			return
 		}
 
@@ -265,14 +265,14 @@ func proposalDepositsHandler(cli *_cli.CLI) http.HandlerFunc {
 
 		body, err := newProposalDeposits(r)
 		if err != nil {
-			utils.WriteErrorToResponse(w, 400, errors.ErrorParseRequestBody(MODULE))
+			utils.WriteErrorToResponse(w, 400, common.ErrorParseRequestBody(MODULE))
 
 			log.Println(err.Error())
 			return
 		}
 
 		if err = body.Validate(); err != nil {
-			utils.WriteErrorToResponse(w, 400, errors.ErrorValidateRequestBody(MODULE))
+			utils.WriteErrorToResponse(w, 400, common.ErrorValidateRequestBody(MODULE))
 
 			log.Println(err.Error())
 			return
@@ -280,7 +280,7 @@ func proposalDepositsHandler(cli *_cli.CLI) http.HandlerFunc {
 
 		id, err := strconv.ParseUint(vars["id"], 10, 64)
 		if err != nil {
-			utils.WriteErrorToResponse(w, 400, errors.ErrorParseQueryParams(MODULE))
+			utils.WriteErrorToResponse(w, 400, common.ErrorParseQueryParams(MODULE))
 
 			log.Println(err.Error())
 			return
@@ -288,7 +288,7 @@ func proposalDepositsHandler(cli *_cli.CLI) http.HandlerFunc {
 
 		msg, err := messages.NewProposalDeposits(body.FromAddress, id, body.Amount).Raw()
 		if err != nil {
-			utils.WriteErrorToResponse(w, 400, errors.ErrorFailedToPrepareMsg(MODULE))
+			utils.WriteErrorToResponse(w, 400, common.ErrorFailedToPrepareMsg(MODULE))
 
 			log.Println(err.Error())
 			return
@@ -298,10 +298,10 @@ func proposalDepositsHandler(cli *_cli.CLI) http.HandlerFunc {
 
 		res, _err := cli.Tx([]sdk.Msg{msg}, body.Memo, body.Gas, body.GasAdjustment,
 			body.GasPrices.Raw(), body.Fees.Raw(), body.Password)
-		if err != nil {
-			utils.WriteErrorToResponse(w, 400, _err)
+		if _err != nil {
+			utils.WriteErrorToResponse(w, 400, common.ErrorFailedToBroadcastTransaction(MODULE))
 
-			log.Println(err.Error())
+			log.Println(_err.Error())
 			return
 		}
 
@@ -332,14 +332,14 @@ func proposalVotesHandler(cli *_cli.CLI) http.HandlerFunc {
 
 		body, err := newProposalVotes(r)
 		if err != nil {
-			utils.WriteErrorToResponse(w, 400, errors.ErrorParseRequestBody(MODULE))
+			utils.WriteErrorToResponse(w, 400, common.ErrorParseRequestBody(MODULE))
 
 			log.Println(err.Error())
 			return
 		}
 
 		if err = body.Validate(); err != nil {
-			utils.WriteErrorToResponse(w, 400, errors.ErrorValidateRequestBody(MODULE))
+			utils.WriteErrorToResponse(w, 400, common.ErrorValidateRequestBody(MODULE))
 
 			log.Println(err.Error())
 			return
@@ -347,7 +347,7 @@ func proposalVotesHandler(cli *_cli.CLI) http.HandlerFunc {
 
 		id, err := strconv.ParseUint(vars["id"], 10, 64)
 		if err != nil {
-			utils.WriteErrorToResponse(w, 400, errors.ErrorParseQueryParams(MODULE))
+			utils.WriteErrorToResponse(w, 400, common.ErrorParseQueryParams(MODULE))
 
 			log.Println(err.Error())
 			return
@@ -355,7 +355,7 @@ func proposalVotesHandler(cli *_cli.CLI) http.HandlerFunc {
 
 		msg, err := messages.NewProposalVotes(body.FromAddress, id, body.Option).Raw()
 		if err != nil {
-			utils.WriteErrorToResponse(w, 400, errors.ErrorFailedToPrepareMsg(MODULE))
+			utils.WriteErrorToResponse(w, 400, common.ErrorFailedToPrepareMsg(MODULE))
 
 			log.Println(err.Error())
 			return
@@ -365,10 +365,10 @@ func proposalVotesHandler(cli *_cli.CLI) http.HandlerFunc {
 
 		res, _err := cli.Tx([]sdk.Msg{msg}, body.Memo, body.Gas, body.GasAdjustment,
 			body.GasPrices.Raw(), body.Fees.Raw(), body.Password)
-		if err != nil {
-			utils.WriteErrorToResponse(w, 400, _err)
+		if _err != nil {
+			utils.WriteErrorToResponse(w, 400, common.ErrorFailedToBroadcastTransaction(MODULE))
 
-			log.Println(err.Error())
+			log.Println(_err.Error())
 			return
 		}
 

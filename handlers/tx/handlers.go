@@ -7,6 +7,7 @@ import (
 	"github.com/gorilla/mux"
 
 	_cli "github.com/ironman0x7b2/client/cli"
+	"github.com/ironman0x7b2/client/handlers/common"
 	"github.com/ironman0x7b2/client/utils"
 )
 
@@ -19,13 +20,15 @@ import (
  * @apiSuccess {object} result Success object.
  */
 
+const MODULE = "txs"
+
 func getTxs(cli *_cli.CLI) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		txs, err := cli.GetTxs(r)
 		if err != nil {
-			utils.WriteErrorToResponse(w, 400, err)
+			utils.WriteErrorToResponse(w, 400, common.ErrorFailedToGetTransactions(MODULE))
 
-			log.Println(err.Message)
+			log.Println(err.Error())
 			return
 		}
 
@@ -48,7 +51,9 @@ func getBankTxs(cli *_cli.CLI) http.HandlerFunc {
 
 		txs, err := cli.GetBankTxs(vars["address"], r)
 		if err != nil {
-			utils.WriteErrorToResponse(w, 400, err)
+			utils.WriteErrorToResponse(w, 400, common.ErrorFailedToGetTransactions(MODULE))
+
+			log.Println(err.Error())
 			return
 		}
 
@@ -71,7 +76,9 @@ func getTx(cli *_cli.CLI) http.HandlerFunc {
 
 		tx, err := cli.GetTx(vars["hash"])
 		if err != nil {
-			utils.WriteErrorToResponse(w, 400, err)
+			utils.WriteErrorToResponse(w, 400, common.ErrorFailedToGetTransaction(MODULE))
+
+			log.Println(err.Error())
 			return
 		}
 

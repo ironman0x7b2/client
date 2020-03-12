@@ -4,7 +4,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/ironman0x7b2/client/handlers/errors"
+	"github.com/ironman0x7b2/client/handlers/common"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/gorilla/mux"
@@ -31,7 +31,7 @@ func getAccountHandler(cli *_cli.CLI) http.HandlerFunc {
 
 		address, err := sdk.AccAddressFromHex(vars["address"])
 		if err != nil {
-			utils.WriteErrorToResponse(w, 400, errors.ErrorDecodeAddress(MODULE))
+			utils.WriteErrorToResponse(w, 400, common.ErrorDecodeAddress(MODULE))
 
 			log.Println(err.Error())
 			return
@@ -39,7 +39,7 @@ func getAccountHandler(cli *_cli.CLI) http.HandlerFunc {
 
 		account, err := cli.GetAccount(address)
 		if err != nil {
-			utils.WriteErrorToResponse(w, 400, errors.ErrorQueryAccount())
+			utils.WriteErrorToResponse(w, 400, errorQueryAccount())
 
 			log.Println(err.Error())
 			return
@@ -72,14 +72,14 @@ func transferCoinsHandler(cli *_cli.CLI) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		body, err := newTransferCoins(r)
 		if err != nil {
-			utils.WriteErrorToResponse(w, 400, errors.ErrorParseRequestBody(MODULE))
+			utils.WriteErrorToResponse(w, 400, common.ErrorParseRequestBody(MODULE))
 
 			log.Println(err.Error())
 			return
 		}
 
 		if err = body.Validate(); err != nil {
-			utils.WriteErrorToResponse(w, 400, errors.ErrorValidateRequestBody(MODULE))
+			utils.WriteErrorToResponse(w, 400, common.ErrorValidateRequestBody(MODULE))
 
 			log.Println(err.Error())
 			return
@@ -87,7 +87,7 @@ func transferCoinsHandler(cli *_cli.CLI) http.HandlerFunc {
 
 		msg, err := messages.NewSend(body.FromAddress, body.ToAddress, body.Amount).Raw()
 		if err != nil {
-			utils.WriteErrorToResponse(w, 400, errors.ErrorFailedToPrepareMsg(MODULE))
+			utils.WriteErrorToResponse(w, 400, common.ErrorFailedToPrepareMsg(MODULE))
 
 			log.Println(err.Error())
 			return
@@ -98,7 +98,7 @@ func transferCoinsHandler(cli *_cli.CLI) http.HandlerFunc {
 		res, _err := cli.Tx([]sdk.Msg{msg}, body.Memo, body.Gas, body.GasAdjustment,
 			body.GasPrices.Raw(), body.Fees.Raw(), body.Password)
 		if _err != nil {
-			utils.WriteErrorToResponse(w, 400, _err)
+			utils.WriteErrorToResponse(w, 400, common.ErrorFailedToBroadcastTransaction(MODULE))
 
 			log.Println(_err.Message)
 			return
@@ -123,7 +123,7 @@ func getDelegatorDelegationsHandler(cli *_cli.CLI) http.HandlerFunc {
 
 		delegations, err := cli.GetDelegatorDelegations(vars["address"])
 		if err != nil {
-			utils.WriteErrorToResponse(w, 400, errors.ErrorFailedToGetDelegatorDelegations())
+			utils.WriteErrorToResponse(w, 400, errorFailedToGetDelegatorDelegations())
 
 			log.Println(err)
 			return
@@ -148,7 +148,7 @@ func getDelegatorValidatorsHandler(cli *_cli.CLI) http.HandlerFunc {
 
 		validators, err := cli.GetDelegatorValidators(vars["address"])
 		if err != nil {
-			utils.WriteErrorToResponse(w, 400, errors.ErrorFailedToGetDelegatorValidators())
+			utils.WriteErrorToResponse(w, 400, errorFailedToGetDelegatorValidators())
 
 			log.Println(err)
 			return

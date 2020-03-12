@@ -11,7 +11,7 @@ import (
 	"github.com/gorilla/mux"
 
 	_cli "github.com/ironman0x7b2/client/cli"
-	"github.com/ironman0x7b2/client/handlers/errors"
+	"github.com/ironman0x7b2/client/handlers/common"
 	"github.com/ironman0x7b2/client/models"
 	"github.com/ironman0x7b2/client/utils"
 )
@@ -31,7 +31,7 @@ func getKeysHandler(cli *_cli.CLI) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		infos, err := cli.Keybase.List()
 		if err != nil {
-			utils.WriteErrorToResponse(w, 500, errors.ErrorFailedToListKeys())
+			utils.WriteErrorToResponse(w, 500, errorFailedToListKeys())
 
 			log.Println(err.Error())
 			return
@@ -65,7 +65,7 @@ func getKeysWithPrefixHandler(cli *_cli.CLI) http.HandlerFunc {
 		address := vars["address"]
 		_address, err := sdk.AccAddressFromHex(address)
 		if err != nil {
-			utils.WriteErrorToResponse(w, 400, errors.ErrorDecodeAddress(MODULE))
+			utils.WriteErrorToResponse(w, 400, common.ErrorDecodeAddress(MODULE))
 
 			log.Println(err.Error())
 			return
@@ -79,14 +79,14 @@ func addKeyHandler(cli *_cli.CLI) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		body, err := newAddKey(r)
 		if err != nil {
-			utils.WriteErrorToResponse(w, 400, errors.ErrorParseRequestBody(MODULE))
+			utils.WriteErrorToResponse(w, 400, common.ErrorParseRequestBody(MODULE))
 
 			log.Println(err.Error())
 			return
 		}
 
 		if err = body.Validate(); err != nil {
-			utils.WriteErrorToResponse(w, 400, errors.ErrorValidateRequestBody(MODULE))
+			utils.WriteErrorToResponse(w, 400, common.ErrorValidateRequestBody(MODULE))
 
 			log.Println(err.Error())
 			return
@@ -94,7 +94,7 @@ func addKeyHandler(cli *_cli.CLI) http.HandlerFunc {
 
 		info, _ := cli.Keybase.Get(body.Name)
 		if info != nil {
-			utils.WriteErrorToResponse(w, 400, errors.ErrorDuplicateKeyName())
+			utils.WriteErrorToResponse(w, 400, errorDuplicateKeyName())
 
 			return
 		}
@@ -103,7 +103,7 @@ func addKeyHandler(cli *_cli.CLI) http.HandlerFunc {
 			mnemonic := strings.Split(body.Mnemonic, " ")
 			fmt.Println(len(mnemonic))
 			if len(mnemonic) != 24 {
-				utils.WriteErrorToResponse(w, 400, errors.ErrorFailedToCreateMnemonic())
+				utils.WriteErrorToResponse(w, 400, errorFailedToCreateMnemonic())
 
 				log.Println("failed to create the new mnemonic")
 				return
@@ -113,7 +113,7 @@ func addKeyHandler(cli *_cli.CLI) http.HandlerFunc {
 		if body.Mnemonic == "" {
 			entropy, err := bip39.NewEntropy(256) // nolint: govet
 			if err != nil {
-				utils.WriteErrorToResponse(w, 400, errors.ErrorInvalidMnemonic())
+				utils.WriteErrorToResponse(w, 400, errorInvalidMnemonic())
 
 				log.Println(err.Error())
 				return
@@ -121,7 +121,7 @@ func addKeyHandler(cli *_cli.CLI) http.HandlerFunc {
 
 			body.Mnemonic, err = bip39.NewMnemonic(entropy)
 			if err != nil {
-				utils.WriteErrorToResponse(w, 400, errors.ErrorFailedToCreateMnemonic())
+				utils.WriteErrorToResponse(w, 400, errorFailedToCreateMnemonic())
 
 				log.Println(err.Error())
 				return
@@ -130,7 +130,7 @@ func addKeyHandler(cli *_cli.CLI) http.HandlerFunc {
 
 		info, err = cli.Keybase.CreateAccount(body.Name, body.Mnemonic, body.BIP39Password, body.Password, 0, 0)
 		if err != nil {
-			utils.WriteErrorToResponse(w, 500, errors.ErrorFailedToCreateKey())
+			utils.WriteErrorToResponse(w, 500, errorFailedToCreateKey())
 
 			log.Println(err.Error())
 			return
@@ -159,21 +159,21 @@ func deleteKeyHandler(cli *_cli.CLI) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		body, err := newDeleteKey(r)
 		if err != nil {
-			utils.WriteErrorToResponse(w, 400, errors.ErrorParseRequestBody(MODULE))
+			utils.WriteErrorToResponse(w, 400, common.ErrorParseRequestBody(MODULE))
 
 			log.Println(err.Error())
 			return
 		}
 
 		if err = body.Validate(); err != nil {
-			utils.WriteErrorToResponse(w, 400, errors.ErrorValidateRequestBody(MODULE))
+			utils.WriteErrorToResponse(w, 400, common.ErrorValidateRequestBody(MODULE))
 
 			log.Println(err.Error())
 			return
 		}
 
 		if err = cli.Keybase.Delete(body.Name, body.Password, false); err != nil {
-			utils.WriteErrorToResponse(w, 500, errors.ErrorFailedToDeleteKey())
+			utils.WriteErrorToResponse(w, 500, errorFailedToDeleteKey())
 
 			log.Println(err.Error())
 			return

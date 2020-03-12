@@ -8,7 +8,7 @@ import (
 	"github.com/gorilla/mux"
 
 	_cli "github.com/ironman0x7b2/client/cli"
-	"github.com/ironman0x7b2/client/handlers/errors"
+	"github.com/ironman0x7b2/client/handlers/common"
 	"github.com/ironman0x7b2/client/messages"
 	"github.com/ironman0x7b2/client/utils"
 )
@@ -26,11 +26,11 @@ const MODULE = "staking"
 
 func getAllValidatorsHandler(cli *_cli.CLI) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		validator, err := cli.GetAllValidators(r, MODULE)
+		validator, err := cli.GetAllValidators(r)
 		if err != nil {
-			utils.WriteErrorToResponse(w, 400, err)
+			utils.WriteErrorToResponse(w, 400, common.ErrorFailedToGetValidators(MODULE))
 
-			log.Println(err.Message)
+			log.Println(err)
 			return
 		}
 
@@ -51,11 +51,11 @@ func getValidatorHandler(cli *_cli.CLI) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 
-		validator, err := cli.GetValidator(vars["address"], MODULE)
+		validator, err := cli.GetValidator(vars["address"])
 		if err != nil {
-			utils.WriteErrorToResponse(w, 400, err)
+			utils.WriteErrorToResponse(w, 400, common.ErrorFailedToGetValidator(MODULE))
 
-			log.Println(err.Message)
+			log.Println(err)
 			return
 		}
 
@@ -86,14 +86,14 @@ func delegationHandler(cli *_cli.CLI) http.HandlerFunc {
 
 		body, err := newDelegate(r)
 		if err != nil {
-			utils.WriteErrorToResponse(w, 400, errors.ErrorParseRequestBody(MODULE))
+			utils.WriteErrorToResponse(w, 400, common.ErrorParseRequestBody(MODULE))
 
 			log.Println(err.Error())
 			return
 		}
 
 		if err = body.Validate(); err != nil {
-			utils.WriteErrorToResponse(w, 400, errors.ErrorValidateRequestBody(MODULE))
+			utils.WriteErrorToResponse(w, 400, common.ErrorValidateRequestBody(MODULE))
 
 			log.Println(err.Error())
 			return
@@ -101,7 +101,7 @@ func delegationHandler(cli *_cli.CLI) http.HandlerFunc {
 
 		msg, err := messages.NewDelegate(body.FromAddress, vars["validatorAddress"], body.Amount).Raw()
 		if err != nil {
-			utils.WriteErrorToResponse(w, 400, errors.ErrorFailedToPrepareMsg(MODULE))
+			utils.WriteErrorToResponse(w, 400, common.ErrorFailedToPrepareMsg(MODULE))
 
 			log.Println(err.Error())
 			return
@@ -111,10 +111,10 @@ func delegationHandler(cli *_cli.CLI) http.HandlerFunc {
 
 		res, _err := cli.Tx([]sdk.Msg{msg}, body.Memo, body.Gas, body.GasAdjustment,
 			body.GasPrices.Raw(), body.Fees.Raw(), body.Password)
-		if err != nil {
-			utils.WriteErrorToResponse(w, 400, _err)
+		if _err != nil {
+			utils.WriteErrorToResponse(w, 400, common.ErrorFailedToBroadcastTransaction(MODULE))
 
-			log.Println(err.Error())
+			log.Println(_err.Error())
 			return
 		}
 
@@ -146,14 +146,14 @@ func reDelegationHandler(cli *_cli.CLI) http.HandlerFunc {
 
 		body, err := newReDelegation(r)
 		if err != nil {
-			utils.WriteErrorToResponse(w, 400, errors.ErrorParseRequestBody(MODULE))
+			utils.WriteErrorToResponse(w, 400, common.ErrorParseRequestBody(MODULE))
 
 			log.Println(err.Error())
 			return
 		}
 
 		if err = body.Validate(); err != nil {
-			utils.WriteErrorToResponse(w, 400, errors.ErrorValidateRequestBody(MODULE))
+			utils.WriteErrorToResponse(w, 400, common.ErrorValidateRequestBody(MODULE))
 
 			log.Println(err.Error())
 			return
@@ -161,7 +161,7 @@ func reDelegationHandler(cli *_cli.CLI) http.HandlerFunc {
 
 		msg, err := messages.NewReDelegate(body.FromAddress, vars["valSrcAddress"], body.ValDestAddress, body.Amount).Raw()
 		if err != nil {
-			utils.WriteErrorToResponse(w, 400, errors.ErrorFailedToPrepareMsg(MODULE))
+			utils.WriteErrorToResponse(w, 400, common.ErrorFailedToPrepareMsg(MODULE))
 
 			log.Println(err.Error())
 			return
@@ -171,10 +171,10 @@ func reDelegationHandler(cli *_cli.CLI) http.HandlerFunc {
 
 		res, _err := cli.Tx([]sdk.Msg{msg}, body.Memo, body.Gas, body.GasAdjustment,
 			body.GasPrices.Raw(), body.Fees.Raw(), body.Password)
-		if err != nil {
-			utils.WriteErrorToResponse(w, 400, _err)
+		if _err != nil {
+			utils.WriteErrorToResponse(w, 400, common.ErrorFailedToBroadcastTransaction(MODULE))
 
-			log.Println(err.Error())
+			log.Println(_err.Error())
 			return
 		}
 
@@ -205,14 +205,14 @@ func unbondHandler(cli *_cli.CLI) http.HandlerFunc {
 
 		body, err := newUnbond(r)
 		if err != nil {
-			utils.WriteErrorToResponse(w, 400, errors.ErrorParseRequestBody(MODULE))
+			utils.WriteErrorToResponse(w, 400, common.ErrorParseRequestBody(MODULE))
 
 			log.Println(err.Error())
 			return
 		}
 
 		if err = body.Validate(); err != nil {
-			utils.WriteErrorToResponse(w, 400, errors.ErrorValidateRequestBody(MODULE))
+			utils.WriteErrorToResponse(w, 400, common.ErrorValidateRequestBody(MODULE))
 
 			log.Println(err.Error())
 			return
@@ -220,7 +220,7 @@ func unbondHandler(cli *_cli.CLI) http.HandlerFunc {
 
 		msg, err := messages.NewUnbond(body.FromAddress, vars["validatorAddress"], body.Amount).Raw()
 		if err != nil {
-			utils.WriteErrorToResponse(w, 400, errors.ErrorFailedToPrepareMsg(MODULE))
+			utils.WriteErrorToResponse(w, 400, common.ErrorFailedToPrepareMsg(MODULE))
 
 			log.Println(err.Error())
 			return
@@ -230,10 +230,10 @@ func unbondHandler(cli *_cli.CLI) http.HandlerFunc {
 
 		res, _err := cli.Tx([]sdk.Msg{msg}, body.Memo, body.Gas, body.GasAdjustment,
 			body.GasPrices.Raw(), body.Fees.Raw(), body.Password)
-		if err != nil {
-			utils.WriteErrorToResponse(w, 400, _err)
+		if _err != nil {
+			utils.WriteErrorToResponse(w, 400, common.ErrorFailedToBroadcastTransaction(MODULE))
 
-			log.Println(err.Error())
+			log.Println(_err.Error())
 			return
 		}
 

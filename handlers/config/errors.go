@@ -1,4 +1,4 @@
-package errors
+package config
 
 import (
 	"github.com/ironman0x7b2/client/types"
@@ -7,16 +7,16 @@ import (
 const (
 	CONFIG = "config"
 
-	errFailedToCallUpdateHook = 6
-	errFailedToSaveConfig     = 7
+	errFailedToCallUpdateHook = 12
+	errFailedToSaveConfig     = 13
 
 	errMsgFailedToCallUpdateHook = "failed to call update hook"
 	errMsgFailedToSaveConfig     = "failed to save config"
 )
 
-func ErrorFailedToCallUpdateHook() *types.Error {
+func errorFailedToCallUpdateHook() *types.Error {
 	return types.NewError(CONFIG, errFailedToCallUpdateHook, errMsgFailedToCallUpdateHook)
 }
-func ErrorFailedToSaveConfig() *types.Error {
+func errorFailedToSaveConfig() *types.Error {
 	return types.NewError(CONFIG, errFailedToSaveConfig, errMsgFailedToSaveConfig)
 }

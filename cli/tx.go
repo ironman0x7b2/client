@@ -2,32 +2,30 @@ package cli
 
 import (
 	"encoding/json"
+	"errors"
 	"io/ioutil"
 	"net/http"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/auth/client/utils"
-
-	"github.com/ironman0x7b2/client/handlers/errors"
-	"github.com/ironman0x7b2/client/types"
 )
 
 const MODULE = "txs"
 
 func (c *CLI) Tx(messages []sdk.Msg, memo string, gas uint64, gasAdjustment float64,
-	prices sdk.DecCoins, fees sdk.Coins, password string) (*sdk.TxResponse, *types.Error) {
+	prices sdk.DecCoins, fees sdk.Coins, password string) (*sdk.TxResponse, error) {
 	key, err := c.Keybase.Get(c.FromName)
 	if err != nil {
-		return nil, errors.ErrorFailedToGetKeyInfo()
+		return nil, err
 	}
 
 	account, err := c.GetAccount(key.GetAddress())
 	if err != nil {
-		return nil, errors.ErrorQueryAccount()
+		return nil, err
 	}
 	if account == nil {
-		return nil, errors.ErrorAccountDoesNotExist()
+		return nil, err
 	}
 
 	txb := auth.NewTxBuilder(utils.GetTxEncoder(c.Codec),
@@ -37,17 +35,17 @@ func (c *CLI) Tx(messages []sdk.Msg, memo string, gas uint64, gasAdjustment floa
 
 	tx, err := txb.BuildAndSign(c.FromName, password, messages)
 	if err != nil {
-		return nil, errors.ErrorSignTransactions()
+		return nil, err
 	}
 
 	node, err := c.GetNode()
 	if err != nil {
-		return nil, errors.ErrorGetRPCNode()
+		return nil, err
 	}
 
 	result, err := node.BroadcastTxSync(tx)
 	if err != nil {
-		return nil, errors.ErrorFailedToBroadcastTransaction()
+		return nil, err
 	}
 
 	res := sdk.NewResponseFormatBroadcastTx(result)
@@ -55,37 +53,37 @@ func (c *CLI) Tx(messages []sdk.Msg, memo string, gas uint64, gasAdjustment floa
 	return &res, nil
 }
 
-func (cli *CLI) GetTx(hash string) (interface{}, *types.Error) {
+func (cli *CLI) GetTx(hash string) (interface{}, error) {
 	if cli.ExplorerAddress == "" {
-		return nil, errors.ErrorInvalidExplorerAddress()
+		return nil, errors.New("invalid explorer address")
 	}
 
 	url := "http://" + cli.ExplorerAddress + "/txs/" + hash
 
 	res, err := http.Get(url)
 	if err != nil {
-		return nil, errors.ErrorFailedToGetTransaction()
+		return nil, err
 	}
 
 	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
-		return nil, errors.ErrorFailedToReadResponseBody(MODULE)
+		return nil, err
 	}
 
 	var tx interface{}
 	err = json.Unmarshal(body, &tx)
 	if err != nil {
-		return nil, errors.ErrorFailedToUnmarshalTransaction()
+		return nil, err
 	}
 
 	return tx, nil
 }
 
-func (cli *CLI) GetTxs(r *http.Request) (interface{}, *types.Error) {
+func (cli *CLI) GetTxs(r *http.Request) (interface{}, error) {
 	signers := r.URL.Query().Get("signers")
 
 	if cli.ExplorerAddress == "" {
-		return nil, errors.ErrorInvalidExplorerAddress()
+		return nil, errors.New("invalid explorer address")
 	}
 
 	url := "http://" + cli.ExplorerAddress + "/txs"
@@ -95,28 +93,28 @@ func (cli *CLI) GetTxs(r *http.Request) (interface{}, *types.Error) {
 
 	res, err := http.Get(url)
 	if err != nil {
-		return nil, errors.ErrorFailedToGetTransactions()
+		return nil, err
 	}
 
 	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
-		return nil, errors.ErrorFailedToReadResponseBody(MODULE)
+		return nil, err
 	}
 
 	var tx interface{}
 	err = json.Unmarshal(body, &tx)
 	if err != nil {
-		return nil, errors.ErrorFailedToUnmarshalTransactions()
+		return nil, err
 	}
 
 	return tx, nil
 }
 
-func (cli *CLI) GetBankTxs(address string, r *http.Request) (interface{}, *types.Error) {
+func (cli *CLI) GetBankTxs(address string, r *http.Request) (interface{}, error) {
 	_type := r.URL.Query().Get("type")
 
 	if cli.ExplorerAddress == "" {
-		return nil, errors.ErrorInvalidExplorerAddress()
+		return nil, errors.New("invalid explorer address")
 	}
 
 	url := "http://" + cli.ExplorerAddress + "/txs/bank/" + address
@@ -129,18 +127,18 @@ func (cli *CLI) GetBankTxs(address string, r *http.Request) (interface{}, *types
 
 	res, err := http.Get(url)
 	if err != nil {
-		return nil, errors.ErrorFailedToGetTransactions()
+		return nil, err
 	}
 
 	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
-		return nil, errors.ErrorFailedToReadResponseBody(MODULE)
+		return nil, err
 	}
 
 	var tx interface{}
 	err = json.Unmarshal(body, &tx)
 	if err != nil {
-		return nil, errors.ErrorFailedToUnmarshalTransactions()
+		return nil, err
 	}
 
 	return tx, nil

@@ -4,7 +4,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/ironman0x7b2/client/handlers/errors"
+	"github.com/ironman0x7b2/client/handlers/common"
 	"github.com/ironman0x7b2/client/types"
 	"github.com/ironman0x7b2/client/utils"
 )
@@ -50,14 +50,14 @@ func updateConfigHandler(config *types.Config) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		body, err := newUpdateConfig(r)
 		if err != nil {
-			utils.WriteErrorToResponse(w, 400, errors.ErrorParseRequestBody(MODULE))
+			utils.WriteErrorToResponse(w, 400, common.ErrorParseRequestBody(MODULE))
 
 			log.Println(err.Error())
 			return
 		}
 
 		if err = body.Validate(); err != nil {
-			utils.WriteErrorToResponse(w, 400, errors.ErrorValidateRequestBody(MODULE))
+			utils.WriteErrorToResponse(w, 400, common.ErrorValidateRequestBody(MODULE))
 
 			log.Println(err.Error())
 			return
@@ -75,7 +75,7 @@ func updateConfigHandler(config *types.Config) http.HandlerFunc {
 		}
 
 		if err := config.UpdateHook(updates); err != nil {
-			utils.WriteErrorToResponse(w, 500, errors.ErrorFailedToCallUpdateHook())
+			utils.WriteErrorToResponse(w, 500, errorFailedToCallUpdateHook())
 
 			log.Println(err.Error())
 			return
@@ -83,7 +83,7 @@ func updateConfigHandler(config *types.Config) http.HandlerFunc {
 
 		config.Update(updates)
 		if err := config.SaveToPath(""); err != nil {
-			utils.WriteErrorToResponse(w, 500, errors.ErrorFailedToSaveConfig())
+			utils.WriteErrorToResponse(w, 500, errorFailedToSaveConfig())
 
 			log.Println(err.Error())
 			return
