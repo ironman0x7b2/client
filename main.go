@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"log"
 	"net/http"
 
@@ -83,14 +84,13 @@ func main() {
 	gov.RegisterRoutes(router, cli)
 	distribution.RegisterRoutes(router, cli)
 	tx.RegisterRoutes(router, cli)
-	vpn.RegisterRoutes(router, cli)
+	vpn.RegisterRoutes(router, cli, cfg)
 
 	c := cors.New(cors.Options{
 		AllowedMethods: []string{"GET", "POST", "PUT", "DELETE"},
 	})
 
 	handler := c.Handler(router)
-
+	fmt.Println("serving")
 	panic(http.ListenAndServe(address, handler))
 }
-	

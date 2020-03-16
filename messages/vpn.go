@@ -11,15 +11,15 @@ import (
 
 type Subscription struct {
 	FromAddress string     `json:"from_address"`
-	Deposit     types.Coin `json:"amount"`
+	Amount      types.Coin `json:"amount"`
 	NodeID      string     `json:"node_id"`
 	ResolverID  string     `json:"resolver_id"`
 }
 
-func NewSubscription(fromAddress string, deposit types.Coin, nodeID, resolverID string) *Subscription {
+func NewSubscription(fromAddress string, amount types.Coin, nodeID, resolverID string) *Subscription {
 	return &Subscription{
 		FromAddress: fromAddress,
-		Deposit:     deposit,
+		Amount:      amount,
 		NodeID:      nodeID,
 		ResolverID:  resolverID,
 	}
@@ -28,7 +28,7 @@ func NewSubscription(fromAddress string, deposit types.Coin, nodeID, resolverID 
 func NewSubscriptionFromRaw(m *vpn.MsgStartSubscription) *Subscription {
 	return &Subscription{
 		FromAddress: common.HexBytes(m.From.Bytes()).String(),
-		Deposit:     types.NewCoinFromRaw(m.Deposit),
+		Amount:      types.NewCoinFromRaw(m.Deposit),
 		NodeID:      m.NodeID.String(),
 		ResolverID:  m.ResolverID.String(),
 	}
@@ -40,7 +40,7 @@ func (s *Subscription) Raw() (subscription vpn.MsgStartSubscription, err error) 
 		return subscription, err
 	}
 
-	subscription.Deposit = s.Deposit.Raw()
+	subscription.Deposit = s.Amount.Raw()
 	id, _ := hub.NewNodeIDFromString(s.NodeID)
 	_id, _ := hub.NewResolverIDFromString(s.ResolverID)
 	subscription.NodeID = id

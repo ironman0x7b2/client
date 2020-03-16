@@ -38,7 +38,11 @@ func getConfigHandler(config *types.Config) http.HandlerFunc {
  *  "explorer_address":"ip:port",
  *  "verifier_dir": "/home/user/.sentinel/client",
  * "keys_dir": "/home/user/.sentinel/client",
- * "resolver_address": "ip:port",
+ *	"resolvers":[{
+ *		"id":"reso0",
+ *		"ip":"127.0.0.1",
+ *		"port":8000
+ *	}]
  * "trust_node": false,
  * "kill_switch": false
  * }

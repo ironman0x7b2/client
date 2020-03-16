@@ -100,7 +100,7 @@ func transferCoinsHandler(cli *_cli.CLI) http.HandlerFunc {
 		if _err != nil {
 			utils.WriteErrorToResponse(w, 400, common.ErrorFailedToBroadcastTransaction(MODULE))
 
-			log.Println(_err.Message)
+			log.Println(_err.Error())
 			return
 		}
 

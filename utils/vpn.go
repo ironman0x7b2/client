@@ -5,6 +5,7 @@ import (
 	"crypto/tls"
 	"encoding/base64"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -16,101 +17,32 @@ import (
 	"time"
 
 	"github.com/cosmos/cosmos-sdk/client/keys"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkUtils "github.com/cosmos/cosmos-sdk/x/auth/client/utils"
 	"github.com/gorilla/websocket"
 	"github.com/sentinel-official/dvpn-node/node"
 	nodeTypes "github.com/sentinel-official/dvpn-node/types"
-	"github.com/sentinel-official/dvpn-node/utils"
 	hub "github.com/sentinel-official/hub/types"
+	"github.com/sentinel-official/hub/x/vpn"
 
-	"github.com/ironman0x7b2/client/cli"
-	"github.com/ironman0x7b2/client/handlers/errors"
-	"github.com/ironman0x7b2/client/messages"
 	"github.com/ironman0x7b2/client/types"
 )
 
-var client = &http.Client{
-	Transport: &http.Transport{
-		TLSClientConfig: &tls.Config{
-			InsecureSkipVerify: true,
-		},
-	},
+func GetVPNConnectionSubscription(subscriptions []vpn.Subscription, resolverID, nodeID string) (string, error) {
+	var _subscriptions []vpn.Subscription
+
+	for _, s := range subscriptions {
+		if s.Status == vpn.StatusActive && s.ResolverID.String() == resolverID && s.NodeID.String() == nodeID {
+			_subscriptions = append(_subscriptions, s)
+		}
+	}
+
+	if len(_subscriptions) != 0 {
+		return _subscriptions[0].ID.String(), nil
+	}
+
+	return "", errors.New("no active subscription found")
 }
 
-func StartSubscription(cli *cli.CLI, from, fromAddress, password, nodeID, resolverID, nodeIP, nodePort string,
-	amount types.Coin, memo string, fees types.Coins, gasPrices types.DecCoins, gas uint64, gasAdjustment float64, w http.ResponseWriter) (string, error) {
-	msg, err := messages.NewSubscription(fromAddress, amount, nodeID, resolverID).Raw()
-	if err != nil {
-		utils.WriteErrorToResponse(w, 400, err)
-		log.Println(err.Error())
-		return "", err
-	}
-
-	cli.CLIContext = cli.WithFromName(from)
-
-	res, _err := cli.Tx([]sdk.Msg{msg}, memo, gas, gasAdjustment,
-		gasPrices.Raw(), fees.Raw(), password)
-	if _err != nil {
-		utils.WriteErrorToResponse(w, 400, _err)
-		log.Println(_err.Message)
-		return "", err
-	}
-
-	time.Sleep(4 * time.Second)
-	data, err := sdkUtils.QueryTx(cli.CLIContext, res.TxHash)
-	if err != nil {
-		log.Println(err)
-		return "", err
-	}
-
-	var _res struct {
-		TxHash         string `json:"tx_hash"`
-		SubscriptionID string `json:"subscription_id"`
-	}
-
-	_res.TxHash = res.TxHash
-	subscriptionID := data.Events[1].Attributes[0].Value
-	log.Println("Start _newVPN transaction completed with hash  and subsription_id", res.TxHash, subscriptionID)
-
-	_url := "https://" + nodeIP + ":" + nodePort + "/subscriptions"
-
-	message := map[string]interface{}{
-		"tx_hash": _res.TxHash,
-	}
-
-	bz, err := json.Marshal(message)
-	if err != nil {
-		utils.WriteErrorToResponse(w, 400, errors.ErrorFailedToMarshallNodeReqMsg())
-		log.Println(err)
-		return "", err
-	}
-
-	resp, err := client.Post(_url, "application/json", bytes.NewBuffer(bz))
-	if err != nil {
-		log.Println(err.Error())
-		return "", err
-	}
-
-	if resp.StatusCode != 201 {
-		log.Println("Error while submitting tx_hash to node")
-	}
-
-	_body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		log.Println("Error while reading response body from node")
-	}
-
-	var _resp types.Response
-	err = json.Unmarshal(_body, &_resp)
-	if err != nil {
-		log.Println("Error while unmarshal node response")
-	}
-
-	return subscriptionID, nil
-}
-
-func ConnectVPN(from, password, subscriptionID, nodeIP string, nodePort string) {
+func ConnectVPN(client *http.Client, from, password, subscriptionID, nodeIP string, nodePort string) {
 	_url := "https://" + nodeIP + ":" + nodePort + "/subscriptions/" + subscriptionID + "/key"
 	resp, err := client.Post(_url, "application/json", nil)
 	if err != nil {
@@ -171,7 +103,7 @@ func ConnectVPN(from, password, subscriptionID, nodeIP string, nodePort string) 
 
 	err = ioutil.WriteFile(types.DefaultConfigDir+"/vpn.ovpn", decoded, 0755)
 	if err != nil {
-		fmt.Printf("Unable to write file: %v", err)
+		log.Println("Unable to write file: %v", err)
 	}
 
 	connCmd := "sudo openvpn " + types.DefaultConfigDir + "/vpn.ovpn "

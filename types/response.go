@@ -6,7 +6,7 @@ import (
 
 type Response struct {
 	Success bool        `json:"success"`
-	Error   interface{} `json:"error,omitempty"`
+	Error   *Error      `json:"error,omitempty"`
 	Result  interface{} `json:"result,omitempty"`
 }
 
