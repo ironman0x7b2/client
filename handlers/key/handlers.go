@@ -1,20 +1,19 @@
 package key
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"strings"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/go-bip39"
-	"github.com/gorilla/mux"
 
 	_cli "github.com/ironman0x7b2/client/cli"
 	"github.com/ironman0x7b2/client/handlers/common"
 	"github.com/ironman0x7b2/client/models"
 	"github.com/ironman0x7b2/client/utils"
 )
+
+const MODULE = "key"
 
 /**
  * @api {get} /keys get keys
@@ -24,8 +23,6 @@ import (
  * @apiSuccess {Boolean} success Success key.
  * @apiSuccess {object} result Success object.
  */
-
-const MODULE = "key"
 
 func getKeysHandler(cli *_cli.CLI) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -45,6 +42,37 @@ func getKeysHandler(cli *_cli.CLI) http.HandlerFunc {
 }
 
 /**
+ * @api {get} /mnemonic get mnemonic
+ * @apiDescription Used to get mnemonic
+ * @apiName GetMnemonic
+ * @apiGroup keys
+ * @apiSuccess {Boolean} success Success key.
+ * @apiSuccess {object} result Success object.
+ */
+
+func generateMnemonicHandler() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		entropy, err := bip39.NewEntropy(256)
+		if err != nil {
+			utils.WriteErrorToResponse(w, 400, errorInvalidMnemonic())
+
+			log.Println(err.Error())
+			return
+		}
+
+		mnemonic, err := bip39.NewMnemonic(entropy)
+		if err != nil {
+			utils.WriteErrorToResponse(w, 400, errorFailedToCreateMnemonic())
+
+			log.Println(err.Error())
+			return
+		}
+
+		utils.WriteResultToResponse(w, 201, mnemonic)
+	}
+}
+
+/**
  * @api {post} /keys add keys
  * @apiDescription Used to create keys
  * @apiName AddKeys
@@ -58,22 +86,6 @@ func getKeysHandler(cli *_cli.CLI) http.HandlerFunc {
  * @apiSuccess {Boolean} success Success key.
  * @apiSuccess {object} result Success object.
  */
-
-func getKeysWithPrefixHandler(cli *_cli.CLI) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
-		address := vars["address"]
-		_address, err := sdk.AccAddressFromHex(address)
-		if err != nil {
-			utils.WriteErrorToResponse(w, 400, common.ErrorDecodeAddress(MODULE))
-
-			log.Println(err.Error())
-			return
-		}
-
-		utils.WriteResultToResponse(w, 200, _address.String())
-	}
-}
 
 func addKeyHandler(cli *_cli.CLI) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -99,33 +111,12 @@ func addKeyHandler(cli *_cli.CLI) http.HandlerFunc {
 			return
 		}
 
-		if body.Mnemonic != "" {
-			mnemonic := strings.Split(body.Mnemonic, " ")
-			fmt.Println(len(mnemonic))
-			if len(mnemonic) != 24 {
-				utils.WriteErrorToResponse(w, 400, errorFailedToCreateMnemonic())
+		mnemonic := strings.Split(body.Mnemonic, " ")
+		if len(mnemonic) != 24 {
+			utils.WriteErrorToResponse(w, 400, errorInvalidMnemonicLength())
 
-				log.Println("failed to create the new mnemonic")
-				return
-			}
-		}
-
-		if body.Mnemonic == "" {
-			entropy, err := bip39.NewEntropy(256) // nolint: govet
-			if err != nil {
-				utils.WriteErrorToResponse(w, 400, errorInvalidMnemonic())
-
-				log.Println(err.Error())
-				return
-			}
-
-			body.Mnemonic, err = bip39.NewMnemonic(entropy)
-			if err != nil {
-				utils.WriteErrorToResponse(w, 400, errorFailedToCreateMnemonic())
-
-				log.Println(err.Error())
-				return
-			}
+			log.Println("invalid mnemonic length")
+			return
 		}
 
 		info, err = cli.Keybase.CreateAccount(body.Name, body.Mnemonic, body.BIP39Password, body.Password, 0, 0)

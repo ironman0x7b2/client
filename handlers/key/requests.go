@@ -31,6 +31,9 @@ func (a *addKey) Validate() error {
 	if a.Password == "" {
 		return fmt.Errorf("invalid field password")
 	}
+	if a.Mnemonic == "" {
+		return fmt.Errorf("invalid field mnemonic")
+	}
 
 	return nil
 }

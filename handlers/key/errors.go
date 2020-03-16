@@ -11,13 +11,15 @@ const (
 	errDuplicateName            = 13
 	errFailedToCreatingMnemonic = 14
 	errInvalidMnemonic          = 15
-	errFailedToCreateKey        = 16
-	errFailedToDeleteKey        = 17
+	errInvalidMnemonicLength    = 16
+	errFailedToCreateKey        = 17
+	errFailedToDeleteKey        = 18
 
 	errMsgFailedToListKeys         = "failed to list the keys"
 	errMsgDuplicateName            = "duplicate key name"
 	errMsgFailedToCreatingMnemonic = "failed creating mnemonic"
-	errMsgInvalidMnemonic          = "failed to invalid mnemonic"
+	errMsgInvalidMnemonic          = "invalid mnemonic"
+	errMsgInvalidMnemonicLength    = "invalid mnemonic length"
 	errMsgFailedToCreateKey        = "failed to creating key"
 	errMsgFailedToDeleteKey        = "failed to deleting key"
 )
@@ -33,6 +35,9 @@ func errorFailedToCreateMnemonic() *types.Error {
 }
 func errorInvalidMnemonic() *types.Error {
 	return types.NewError(KEY, errInvalidMnemonic, errMsgInvalidMnemonic)
+}
+func errorInvalidMnemonicLength() *types.Error {
+	return types.NewError(KEY, errInvalidMnemonicLength, errMsgInvalidMnemonicLength)
 }
 func errorFailedToCreateKey() *types.Error {
 	return types.NewError(KEY, errFailedToCreateKey, errMsgFailedToCreateKey)
