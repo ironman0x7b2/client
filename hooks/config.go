@@ -45,7 +45,7 @@ func ConfigUpdateHook(cli *_cli.CLI) func(*types.Config) error {
 			cli.NodeURI = c.RPCAddress
 			cli.VerifierHome = c.VerifierDir
 		}
-		
+
 		cli.TrustNode = c.TrustNode
 
 		return nil
