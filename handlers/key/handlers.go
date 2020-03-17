@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/cosmos/go-bip39"
+	"github.com/gorilla/mux"
 
 	_cli "github.com/ironman0x7b2/client/cli"
 	"github.com/ironman0x7b2/client/handlers/common"
@@ -42,7 +43,7 @@ func getKeysHandler(cli *_cli.CLI) http.HandlerFunc {
 }
 
 /**
- * @api {get} /mnemonic get mnemonic
+ * @api {get} /mnemonic/{name} get mnemonic
  * @apiDescription Used to get mnemonic
  * @apiName GetMnemonic
  * @apiGroup keys
@@ -50,8 +51,17 @@ func getKeysHandler(cli *_cli.CLI) http.HandlerFunc {
  * @apiSuccess {object} result Success object.
  */
 
-func generateMnemonicHandler() http.HandlerFunc {
+func generateMnemonicHandler(cli *_cli.CLI) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+
+		info, _ := cli.Keybase.Get(vars["name"])
+		if info != nil {
+			utils.WriteErrorToResponse(w, 400, errorDuplicateKeyName())
+
+			return
+		}
+
 		entropy, err := bip39.NewEntropy(256)
 		if err != nil {
 			utils.WriteErrorToResponse(w, 400, errorInvalidMnemonic())

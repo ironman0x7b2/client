@@ -11,8 +11,8 @@ func RegisterRoutes(r *mux.Router, cli *_cli.CLI) {
 		Methods("GET").Path("/keys").
 		HandlerFunc(getKeysHandler(cli))
 	r.Name("GetMnemonic").
-		Methods("GET").Path("/mnemonic").
-		HandlerFunc(generateMnemonicHandler())
+		Methods("GET").Path("/mnemonic/{name}").
+		HandlerFunc(generateMnemonicHandler(cli))
 	r.Name("AddKey").
 		Methods("POST").Path("/keys").
 		HandlerFunc(addKeyHandler(cli))
