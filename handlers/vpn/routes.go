@@ -8,9 +8,12 @@ import (
 )
 
 func RegisterRoutes(r *mux.Router, _cli *cli.CLI, cfg *types.Config) {
-	r.Name("GetNodes").
+	r.Name("GetResolversNodes").
 		Methods("GET").Path("/nodes").
-		HandlerFunc(getNodesHandler(_cli, cfg))
+		HandlerFunc(getResolversNodesHandler(_cli, cfg))
+	r.Name("GetResolverNodes").
+		Methods("GET").Path("/nodes/{id}").
+		HandlerFunc(getResolverNodesHandler(_cli, cfg))
 	r.Name("GetSubscriptions").
 		Methods("GET").Path("/subscriptions/{address}").
 		HandlerFunc(getSubscriptionsHandler(_cli))

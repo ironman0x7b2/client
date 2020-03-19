@@ -32,9 +32,25 @@ var client = &http.Client{
 	},
 }
 
-func getNodesHandler(cli *_cli.CLI, cfg *types.Config) http.HandlerFunc {
+func getResolversNodesHandler(cli *_cli.CLI, cfg *types.Config) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		nodes, _err := cli.GetNodes(cfg, client)
+		nodes, _err := cli.GetResolversNodes(cfg, client)
+		if _err != nil {
+			utils.WriteErrorToResponse(w, 400, errorFailedToGetNodes())
+
+			log.Println(_err.Error())
+			return
+		}
+
+		utils.WriteResultToResponse(w, 200, nodes)
+	}
+}
+
+func getResolverNodesHandler(cli *_cli.CLI, cfg *types.Config) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+
+		nodes, _err := cli.GetResolverNodes(cfg, client, vars["id"])
 		if _err != nil {
 			utils.WriteErrorToResponse(w, 400, errorFailedToGetNodes())
 
