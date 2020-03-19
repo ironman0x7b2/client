@@ -8,14 +8,14 @@ import (
 )
 
 type updateConfig struct {
-	ChainID         string           `json:"chain_id"`
-	RPCAddress      string           `json:"rpc_address"`
-	ExplorerAddress string           `json:"explorer_address"`
-	VerifierDir     string           `json:"verifier_dir"`
-	KeysDir         string           `json:"keys_dir"`
-	Resolvers       []types.Resolver `json:"resolvers"`
-	TrustNode       bool             `json:"trust_node"`
-	KillSwitch      bool             `json:"kill_switch"`
+	ChainID         string         `json:"chain_id"`
+	RPCAddress      string         `json:"rpc_address"`
+	ExplorerAddress string         `json:"explorer_address"`
+	VerifierDir     string         `json:"verifier_dir"`
+	KeysDir         string         `json:"keys_dir"`
+	Resolver        types.Resolver `json:"resolver"`
+	TrustNode       bool           `json:"trust_node"`
+	KillSwitch      bool           `json:"kill_switch"`
 }
 
 func newUpdateConfig(r *http.Request) (*updateConfig, error) {

@@ -9,9 +9,11 @@ const (
 
 	errFailedToCallUpdateHook = 12
 	errFailedToSaveConfig     = 13
+	errResolverAlreadyExists  = 14
 
 	errMsgFailedToCallUpdateHook = "failed to call update hook"
 	errMsgFailedToSaveConfig     = "failed to save config"
+	errMsgResolverAlreadyExists  = "resolver already exists"
 )
 
 func errorFailedToCallUpdateHook() *types.Error {
@@ -19,4 +21,7 @@ func errorFailedToCallUpdateHook() *types.Error {
 }
 func errorFailedToSaveConfig() *types.Error {
 	return types.NewError(CONFIG, errFailedToSaveConfig, errMsgFailedToSaveConfig)
+}
+func errorResolverAlreadyExists() *types.Error {
+	return types.NewError(CONFIG, errResolverAlreadyExists, errMsgResolverAlreadyExists)
 }

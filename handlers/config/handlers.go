@@ -67,6 +67,20 @@ func updateConfigHandler(config *types.Config) http.HandlerFunc {
 			return
 		}
 
+		existed := false
+		for _, resolver := range config.Resolvers {
+			if resolver.IP == body.Resolver.IP && resolver.Port == body.Resolver.Port && resolver.ID == body.Resolver.ID {
+				existed = true
+			}
+		}
+
+		if existed == true {
+			utils.WriteErrorToResponse(w, 400, errorResolverAlreadyExists())
+
+			log.Println("resolver already exists")
+			return
+		}
+
 		updates := &types.Config{
 			ChainID:         body.ChainID,
 			RPCAddress:      body.RPCAddress,
@@ -74,7 +88,7 @@ func updateConfigHandler(config *types.Config) http.HandlerFunc {
 			VerifierDir:     body.VerifierDir,
 			TrustNode:       body.TrustNode,
 			KeysDir:         body.KeysDir,
-			Resolvers:       body.Resolvers,
+			Resolvers:       []types.Resolver{body.Resolver},
 			KillSwitch:      body.KillSwitch,
 		}
 
