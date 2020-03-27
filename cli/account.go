@@ -7,6 +7,9 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"reflect"
+
+	"github.com/ironman0x7b2/client/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
@@ -17,6 +20,20 @@ func (c *CLI) GetAccount(address sdk.AccAddress) (auth.Account, error) {
 	if err != nil {
 		log.Println(err.Error())
 		return nil, err
+	}
+
+	if reflect.ValueOf(c.Verifier).IsNil() {
+		cfg := types.NewDefaultConfig()
+		client, verifier, err := NewVerifier(cfg.VerifierDir, cfg.ChainID, cfg.RPCAddress)
+		if err != nil {
+			return nil, err
+		}
+		if reflect.ValueOf(verifier).IsNil() {
+			return nil, errors.New("Error while connectiong rpc")
+		} else {
+			c.Client = client
+			c.Verifier = verifier
+		}
 	}
 
 	res, _, err := c.QueryWithData(fmt.Sprintf("custom/%s/%s", auth.QuerierRoute, auth.QueryAccount), bytes)
@@ -37,8 +54,8 @@ func (c *CLI) GetAccount(address sdk.AccAddress) (auth.Account, error) {
 	return account, nil
 }
 
-func (cli *CLI) GetDelegatorDelegations(address string) (interface{}, error) {
-	url := "http://" + cli.ExplorerAddress + "/accounts/" + address + "/delegations"
+func (c *CLI) GetDelegatorDelegations(address string) (interface{}, error) {
+	url := "http://" + c.ExplorerAddress + "/accounts/" + address + "/delegations"
 
 	res, err := http.Get(url)
 	if err != nil {
@@ -59,8 +76,8 @@ func (cli *CLI) GetDelegatorDelegations(address string) (interface{}, error) {
 	return delegations, nil
 }
 
-func (cli *CLI) GetDelegatorValidators(address string) (interface{}, error) {
-	url := "http://" + cli.ExplorerAddress + "/accounts/" + address + "/delegations/validators"
+func (c *CLI) GetDelegatorValidators(address string) (interface{}, error) {
+	url := "http://" + c.ExplorerAddress + "/accounts/" + address + "/delegations/validators"
 
 	res, err := http.Get(url)
 	if err != nil {

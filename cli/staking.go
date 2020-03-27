@@ -6,20 +6,37 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"reflect"
+
+	"github.com/ironman0x7b2/client/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/staking"
 )
 
-func (cli *CLI) GetDelegatorValidatorsFromRPC(address sdk.AccAddress) (staking.Validators, error) {
+func (c *CLI) GetDelegatorValidatorsFromRPC(address sdk.AccAddress) (staking.Validators, error) {
+	if reflect.ValueOf(c.Verifier).IsNil() {
+		cfg := types.NewDefaultConfig()
+		client, verifier, err := NewVerifier(cfg.VerifierDir, cfg.ChainID, cfg.RPCAddress)
+		if err != nil {
+			return nil, err
+		}
+		if reflect.ValueOf(verifier).IsNil() {
+			return nil, errors.New("Error while connectiong rpc")
+		} else {
+			c.Client = client
+			c.Verifier = verifier
+		}
+	}
+
 	params := staking.NewQueryDelegatorParams(address)
 
-	bz, err := cli.Codec.MarshalJSON(params)
+	bz, err := c.Codec.MarshalJSON(params)
 	if err != nil {
 		return nil, err
 	}
 
-	res, _, err := cli.QueryWithData(fmt.Sprintf("custom/%s/%s", staking.QuerierRoute, staking.QueryDelegatorValidators), bz)
+	res, _, err := c.QueryWithData(fmt.Sprintf("custom/%s/%s", staking.QuerierRoute, staking.QueryDelegatorValidators), bz)
 	if err != nil {
 		return nil, err
 	}
@@ -33,13 +50,13 @@ func (cli *CLI) GetDelegatorValidatorsFromRPC(address sdk.AccAddress) (staking.V
 	return validators, nil
 }
 
-func (cli *CLI) GetAllValidators(r *http.Request) (interface{}, error) {
+func (c *CLI) GetAllValidators(r *http.Request) (interface{}, error) {
 	status := r.URL.Query().Get("status")
 
-	if cli.ExplorerAddress == "" {
+	if c.ExplorerAddress == "" {
 		return nil, errors.New("invalid explorer address")
 	}
-	url := "http://" + cli.ExplorerAddress + "/validators"
+	url := "http://" + c.ExplorerAddress + "/validators"
 	if status == "active" {
 		url = url + "?status=active"
 	}
@@ -66,12 +83,12 @@ func (cli *CLI) GetAllValidators(r *http.Request) (interface{}, error) {
 	return validators, nil
 }
 
-func (cli *CLI) GetValidator(address string) (interface{}, error) {
-	if cli.ExplorerAddress == "" {
+func (c *CLI) GetValidator(address string) (interface{}, error) {
+	if c.ExplorerAddress == "" {
 		return nil, errors.New("invalid explorer address")
 	}
 
-	url := "http://" + cli.ExplorerAddress + "/validators/" + address
+	url := "http://" + c.ExplorerAddress + "/validators/" + address
 
 	res, err := http.Get(url)
 	if err != nil {

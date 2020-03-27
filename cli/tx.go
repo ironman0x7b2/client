@@ -5,6 +5,9 @@ import (
 	"errors"
 	"io/ioutil"
 	"net/http"
+	"reflect"
+
+	"github.com/ironman0x7b2/client/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
@@ -18,6 +21,20 @@ func (c *CLI) Tx(messages []sdk.Msg, memo string, gas uint64, gasAdjustment floa
 	key, err := c.Keybase.Get(c.FromName)
 	if err != nil {
 		return nil, err
+	}
+
+	if reflect.ValueOf(c.Verifier).IsNil() {
+		cfg := types.NewDefaultConfig()
+		client, verifier, err := NewVerifier(cfg.VerifierDir, cfg.ChainID, cfg.RPCAddress)
+		if err != nil {
+			return nil, err
+		}
+		if reflect.ValueOf(verifier).IsNil() {
+			return nil, errors.New("Error while connectiong rpc")
+		} else {
+			c.Client = client
+			c.Verifier = verifier
+		}
 	}
 
 	account, err := c.GetAccount(key.GetAddress())
@@ -53,12 +70,12 @@ func (c *CLI) Tx(messages []sdk.Msg, memo string, gas uint64, gasAdjustment floa
 	return &res, nil
 }
 
-func (cli *CLI) GetTx(hash string) (interface{}, error) {
-	if cli.ExplorerAddress == "" {
+func (c *CLI) GetTx(hash string) (interface{}, error) {
+	if c.ExplorerAddress == "" {
 		return nil, errors.New("invalid explorer address")
 	}
 
-	url := "http://" + cli.ExplorerAddress + "/txs/" + hash
+	url := "http://" + c.ExplorerAddress + "/txs/" + hash
 
 	res, err := http.Get(url)
 	if err != nil {
@@ -79,14 +96,14 @@ func (cli *CLI) GetTx(hash string) (interface{}, error) {
 	return tx, nil
 }
 
-func (cli *CLI) GetTxs(r *http.Request) (interface{}, error) {
+func (c *CLI) GetTxs(r *http.Request) (interface{}, error) {
 	signers := r.URL.Query().Get("signers")
 
-	if cli.ExplorerAddress == "" {
+	if c.ExplorerAddress == "" {
 		return nil, errors.New("invalid explorer address")
 	}
 
-	url := "http://" + cli.ExplorerAddress + "/txs"
+	url := "http://" + c.ExplorerAddress + "/txs"
 	if signers != "" {
 		url = url + "?signers=" + signers
 	}
@@ -110,14 +127,14 @@ func (cli *CLI) GetTxs(r *http.Request) (interface{}, error) {
 	return tx, nil
 }
 
-func (cli *CLI) GetBankTxs(address string, r *http.Request) (interface{}, error) {
+func (c *CLI) GetBankTxs(address string, r *http.Request) (interface{}, error) {
 	_type := r.URL.Query().Get("type")
 
-	if cli.ExplorerAddress == "" {
+	if c.ExplorerAddress == "" {
 		return nil, errors.New("invalid explorer address")
 	}
 
-	url := "http://" + cli.ExplorerAddress + "/txs/bank/" + address
+	url := "http://" + c.ExplorerAddress + "/txs/bank/" + address
 	if _type == "send" {
 		url = url + "?type=send"
 	}
