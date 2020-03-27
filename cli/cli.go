@@ -41,7 +41,7 @@ func NewVerifier(dir, id, address string) (*client.HTTP, *lite.DynamicVerifier, 
 
 	verifier, err := proxy.NewVerifier(id, root, c, log.NewNopLogger(), 10)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil
 	}
 
 	return c, verifier, nil
